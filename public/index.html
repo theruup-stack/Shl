@@ -387,7 +387,7 @@ body.cal .types,body.live .types,body.live .search{display:none}
 .seg .livei .dot{width:8px;height:8px;margin:0}
 html{-webkit-text-size-adjust:100%}
 img{max-width:100%}
-@media (hover:none){.card:hover,.ltc:hover,.nd-game:hover,.lc:hover,.cell.gd:hover{transform:none}}
+@media (hover:none){.card:hover,.ltc:hover,.nd-game:hover,.lc:hover,.cell.gd:hover,.pp:hover{transform:none}.pp:not(.on):hover{border-color:var(--line2)}}
 
 /* ---------- MOBILE ---------- */
 .club-head>div{min-width:0}.club-head h2{overflow-wrap:anywhere}.cal-card{min-width:0}
@@ -495,6 +495,20 @@ img{max-width:100%}
   .kpis{grid-template-columns:repeat(2,1fr)}
   #mode button{font-size:9.5px}
 }
+
+.pod-intro{display:block}
+.pi-txt h2{margin-top:6px}
+.podpicks{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px;margin-top:18px}
+.pp{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 8px 12px;border-radius:14px;border:1px solid var(--line2);background:rgba(7,9,13,.45);text-align:center;transition:.18s}
+.pp img,.pp .all{width:52px;height:52px;border-radius:50%;background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.5);object-fit:cover}
+.pp .all{display:grid;place-items:center;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1405;font:800 15px "Barlow Condensed",sans-serif;text-transform:uppercase}
+.pp b{font:700 14px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.3px;color:var(--txt)}
+.pp small{font-size:10.5px;color:var(--dim)}
+.pp .new{position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--gold2);box-shadow:0 0 0 3px rgba(243,215,122,.2)}
+.pp:hover{border-color:var(--pd);transform:translateY(-2px)}
+.pp.on{border-color:var(--pd);background:linear-gradient(160deg,color-mix(in srgb,var(--pd) 22%,var(--card2)),var(--card));box-shadow:0 0 0 1px var(--pd),0 12px 30px rgba(0,0,0,.4)}
+.pp.on small{color:var(--pd)}
+@media (max-width:760px){.podpicks{display:flex;overflow-x:auto;scrollbar-width:none;margin:16px -18px 0;padding:2px 18px 4px;gap:8px}.podpicks::-webkit-scrollbar{display:none}.pp{flex:0 0 104px;padding:12px 6px 10px}.pp img,.pp .all{width:44px;height:44px}.pp b{font-size:12.5px}}
 /* FEED */
 .feed-day{margin-top:32px}
 .feed-day h3{font:700 20px "Barlow Condensed",sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:12px;margin-bottom:14px}
@@ -722,6 +736,7 @@ function renderLive(){
   h+='<section class="lsec"><div class="lsec-h"><h3>Tabell</h3><span>'+(GAMES.some(isLiveG)?'live · ställningen räknas som om matcherna slutade nu':(liveOn?'uppdateras live · ':'')+'efter '+GAMES.filter(g=>g.played).length+' matcher')+'</span></div><div class="cal-card tblwrap">'+bigTable(team)+'<div class="hint">V = vinst · ÖV/ÖF = vinst/förlust efter förlängning eller straffar · 1–6 kvartsfinal · 7–10 åttondelsfinal · 14 kval</div></div></section>';
   return h;
 }
+document.getElementById('out').addEventListener('click',e=>{ if(st.mode!=='pods') return; const b=e.target.closest('.pp'); if(!b) return; st.pod=b.dataset.pod; try{localStorage.setItem('shl-pod',st.pod);}catch(_){} render(); const s=document.querySelector('.pod-intro'); if(s) window.scrollTo({top:s.getBoundingClientRect().top+scrollY-(innerWidth<=760?70:130),behavior:'smooth'}); });
 document.getElementById('out').addEventListener('click',e=>{ if(st.mode!=='live') return; const r=e.target.closest('.tbl tr[data-c]'); if(r){st.club=r.dataset.c; location.hash=st.club; render();} });
 
 document.getElementById('out').addEventListener('click',e=>{
@@ -845,11 +860,19 @@ function render(){
       h+='</section>';
     }
   } else if(st.mode==='pods'){
-    h+='<div class="pod-intro"><div><h2>Poddar &amp; media om SHL</h2><p>SHL:s egen kanal, sportredaktionerna och de svenska poddarna och kreatörerna som pratar SHL på YouTube. Små klubbloggor på ett avsnitt visar vilka lag det handlar om. Välj en klubb ovan för att bara se avsnitt om den.</p></div><div class="pod-logos"><a href="#pod-fimpens-resa" title="Fimpens Resa"><img src="'+F.channel.logo+'" alt=""></a>'+P.filter(p=>p!==F.channel).map(p=>'<a href="#pod-'+slug(p.name)+'" title="'+esc(p.name)+'"><img src="'+p.logo+'" alt=""></a>').join('')+'</div></div>';
+    const fAll0=F.seasons.flatMap(s=>s.videos);
+    const pickers=[{k:'',name:'Alla',logo:'',ts:Infinity,n:ALLPOD.length}].concat(
+      P.map(p=>({k:slug(p.name),name:p.name,logo:p.logo,ts:Math.max(...p.videos.map(v=>v.ts)),n:p.videos.length,liga:p===L})),
+      [{k:'fimpens-resa',name:'Fimpens Resa',logo:F.channel.logo,ts:Math.max(...fAll0.map(v=>v.ts)),n:fAll0.length}]
+    ).sort((a,b)=>b.ts-a.ts);
+    if(st.pod===undefined){ try{ st.pod=localStorage.getItem('shl-pod')||''; }catch(e){ st.pod=''; } if(!pickers.some(x=>x.k===st.pod)) st.pod=''; }
+    h+='<div class="pod-intro"><div class="pi-txt"><div class="eyebrow">Poddar &amp; media</div><h2>Välj vem du vill se</h2><p>Tryck på en poddare för att bara se den. Valet sparas till nästa gång.</p></div><div class="podpicks">'+
+      pickers.map(x=>'<button class="pp'+(st.pod===x.k?' on':'')+'" data-pod="'+x.k+'">'+(x.logo?'<img src="'+x.logo+'" alt="">':'<span class="all">Alla</span>')+'<b>'+esc(x.name)+'</b><small>'+(x.k?when(x.ts):x.n+' avsnitt')+'</small>'+(x.k&&NOW-x.ts<2*864e5?'<i class="new"></i>':'')+'</button>').join('')+'</div></div>';
     const secs=[];
     const fAll=F.seasons.flatMap(s=>s.videos);
-    secs.push({ts:Math.max(...fAll.map(v=>v.ts)),html:renderFimpen()});
+    if(!st.pod||st.pod==='fimpens-resa') secs.push({ts:Math.max(...fAll.map(v=>v.ts)),html:renderFimpen()});
     for(const p of P){
+      if(st.pod&&slug(p.name)!==st.pod) continue;
       const vs=p.videos.filter(v=>match(v)&&(!st.club||v.clubs.some(c=>slug(c.club)===st.club))).sort(sorter);
       if(!vs.length) continue;
       const latest=Math.max(...p.videos.map(v=>v.ts));
@@ -865,6 +888,7 @@ function render(){
     if(cur) h+='<div class="feed-day"><h3>'+cur+'</h3><div class="grid">'+buf+'</div></div>';
   }
   document.getElementById('out').innerHTML = h || '<div class="empty">Inga videor matchar din sökning.</div>';
+  const pk=document.querySelector('.podpicks'), on=pk&&pk.querySelector('.pp.on'); if(on&&pk.scrollWidth>pk.clientWidth) pk.scrollLeft=on.offsetLeft-(pk.clientWidth-on.offsetWidth)/2;
 }
 document.getElementById('out').addEventListener('click',e=>{const b=e.target.closest('.nav button'); if(!b) return; const s=b.closest('.row').querySelector('.strip'); s.scrollBy({left:+b.dataset.dir*s.clientWidth*0.85,behavior:'smooth'});});
 
