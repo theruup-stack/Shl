@@ -1,10 +1,18 @@
 {
-  // Cloudflare Workers – SHL-samlingen (videor, poddar, kalender, live)
+  // Cloudflare Workers – SHL-samlingen (videor, poddar, kalender, live, notiser)
   "name": "shl",
   "main": "src/worker.js",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./public",
     "binding": "ASSETS"
+  },
+  // Lagring för notisprenumerationer (skapas automatiskt vid deploy)
+  "kv_namespaces": [
+    { "binding": "PUSH" }
+  ],
+  // Kollar matcher varje minut och skickar påminnelser/mål
+  "triggers": {
+    "crons": ["* * * * *"]
   }
 }

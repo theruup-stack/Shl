@@ -667,6 +667,23 @@ body.noscroll{overflow:hidden}
   .mx-head img{width:48px;height:48px}.mx-head h3{font-size:22px}
   .tbl.sim{min-width:720px}
 }
+
+/* NOTISER */
+.nf{margin-top:18px}
+.nf-row{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:14px;border:1px solid var(--line2);background:rgba(7,9,13,.5);margin-bottom:10px;cursor:pointer}
+.nf-row.main{border-color:rgba(217,180,74,.45)}
+.nf-row div{flex:1}.nf-row b{display:block;font:600 14px Inter}.nf-row span{display:block;color:var(--dim);font-size:12px;margin-top:3px}
+.nf-row input{position:absolute;opacity:0;pointer-events:none}
+.tg{position:relative;flex:0 0 auto;width:46px;height:26px;border-radius:999px;background:var(--line2);transition:.2s}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.nf-row input:checked+.tg{background:linear-gradient(135deg,var(--gold2),var(--gold))}
+.nf-row input:checked+.tg::after{left:23px}
+.nf-row input:disabled+.tg{opacity:.4}
+.nf-group.off{opacity:.5}
+.nf-note{color:var(--mut);font-size:13.5px;line-height:1.55;padding:14px 16px;border-radius:14px;border:1px solid var(--line2);background:rgba(7,9,13,.5)}
+.nf-msg{margin-top:12px;font-size:13px;color:var(--gold2)}
+.nf-test{width:100%;margin-top:6px}
+.bell-on{border-color:var(--gold)!important;color:var(--gold2)!important}
 /* FEED */
 .feed-day{margin-top:32px}
 .feed-day h3{font:700 20px "Barlow Condensed",sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:12px;margin-bottom:14px}
@@ -1188,6 +1205,57 @@ ib.addEventListener('click',async()=>{
 });
 if('serviceWorker' in navigator && SITE===location.origin){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 
+
+/* ---------- NOTISER ---------- */
+let notif={on:false,reminders:true,goals:true}; try{ notif=Object.assign(notif,JSON.parse(localStorage.getItem('shl-notif')||'{}')); }catch(e){}
+const saveNotif=()=>{ try{ localStorage.setItem('shl-notif',JSON.stringify(notif)); }catch(e){} };
+const pushOK=()=>'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window && SITE===location.origin;
+const u8=s=>{ s=s.replace(/-/g,'+').replace(/_/g,'/'); while(s.length%4) s+='='; return Uint8Array.from(atob(s),c=>c.charCodeAt(0)); };
+async function pushSubscribe(){
+  const perm=await Notification.requestPermission(); if(perm!=='granted') throw new Error('Du nekade notiser i webbläsaren. Tillåt dem i inställningarna för sidan och försök igen.');
+  const reg=await navigator.serviceWorker.ready;
+  const {key}=await fetch('/api/push/key').then(r=>{ if(!r.ok) throw new Error('Notiser är inte aktiverade på servern ännu.'); return r.json(); });
+  let sub=await reg.pushManager.getSubscription();
+  if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(key)});
+  const team=myTeam?LIVE_CODES[(D.find(c=>slug(c.club)===myTeam)||{}).club]||'':'';
+  const r=await fetch('/api/push/subscribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sub:sub.toJSON(),team,reminders:notif.reminders,goals:notif.goals})});
+  if(!r.ok) throw new Error('Servern kunde inte spara notiserna.');
+  return sub;
+}
+async function pushUnsubscribe(){
+  try{ const reg=await navigator.serviceWorker.ready; const sub=await reg.pushManager.getSubscription();
+    if(sub){ await fetch('/api/push/unsubscribe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({endpoint:sub.endpoint})}).catch(()=>{}); await sub.unsubscribe(); } }catch(e){}
+}
+function notifModal(msg){
+  const team=D.find(c=>slug(c.club)===myTeam);
+  const who=team?esc(team.club):'alla SHL-matcher';
+  let body;
+  if(!pushOK()){
+    body='<p class="nf-note">'+(SITE!==location.origin?'Notiser fungerar på <b>shl.theruup.workers.dev</b>, inte i den här förhandsvisningen.':isIOS&&!isStandalone?'På iPhone fungerar notiser när sidan är <b>installerad som app</b>: tryck på Dela-knappen i Safari och välj <b>Lägg till på hemskärmen</b>. Öppna sedan appen och slå på notiserna här.':'Din webbläsare stöder inte notiser. Prova Chrome på Android eller installera sidan som app.')+'</p>';
+  } else {
+    const sw=(k,l,d)=>'<label class="nf-row"><div><b>'+l+'</b><span>'+d+'</span></div><input type="checkbox" data-nf="'+k+'"'+(notif[k]?' checked':'')+(notif.on?'':' disabled')+'><i class="tg"></i></label>';
+    body='<label class="nf-row main"><div><b>Notiser '+(notif.on?'på':'av')+'</b><span>För '+who+(team?'':' (välj ett lag i Mitt lag för att bara få ditt lag)')+'</span></div><input type="checkbox" data-nf="on"'+(notif.on?' checked':'')+'><i class="tg"></i></label>'+
+      '<div class="nf-group'+(notif.on?'':' off')+'">'+sw('reminders','⏰ Påminnelse före match','En timme innan nedsläpp, med tid, arena och TV-kanal')+sw('goals','🚨 Mål och resultat','Nedsläpp, varje mål och slutresultat')+'</div>'+
+      (notif.on?'<button class="mx-btn ghost nf-test">Skicka en testnotis</button>':'');
+  }
+  openModal('<div class="mx-head"><img src="'+(team?team.logo:'/icons/icon-192.png')+'" alt=""><div><div class="eyebrow">Notiser</div><h3>Missa inget i '+(team?esc(team.short):'SHL')+'</h3><p>Du kan stänga av allt eller bara vissa notiser när du vill.</p></div></div><div class="nf">'+body+(msg?'<p class="nf-msg">'+msg+'</p>':'')+'</div>');
+}
+document.addEventListener('change',async e=>{
+  const k=e.target.dataset&&e.target.dataset.nf; if(!k) return;
+  const val=e.target.checked;
+  try{
+    if(k==='on'){ if(val){ await pushSubscribe(); notif.on=true; } else { await pushUnsubscribe(); notif.on=false; } }
+    else { notif[k]=val; if(notif.on) await pushSubscribe(); }
+    saveNotif(); notifModal(k==='on'?(val?'✓ Notiserna är på.':'Notiserna är avstängda.'):'✓ Sparat.'); drawMyTeam();
+  }catch(err){ notif.on=false; saveNotif(); notifModal('⚠️ '+esc(err.message||String(err))); }
+});
+document.addEventListener('click',async e=>{
+  if(e.target.closest('[data-notif]')){ notifModal(); return; }
+  if(e.target.closest('.nf-test')){ try{ const reg=await navigator.serviceWorker.ready; const sub=await reg.pushManager.getSubscription(); const r=await fetch('/api/push/test',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({endpoint:sub&&sub.endpoint})}).then(r=>r.json()); notifModal(r.ok?'✓ Testnotisen är skickad, den kommer om några sekunder.':'⚠️ Kunde inte skicka ('+(r.status||r.error)+').'); }catch(err){ notifModal('⚠️ '+esc(String(err))); } }
+});
+// håll servern uppdaterad om laget byts medan notiser är på
+function syncNotifTeam(){ if(notif.on&&pushOK()) pushSubscribe().catch(()=>{}); }
+
 /* ---------- MITT LAG ---------- */
 let myTeam=''; try{ myTeam=localStorage.getItem('shl-myteam')||''; }catch(e){}
 let pickOpen=false;
@@ -1214,7 +1282,7 @@ function drawMyTeam(){
   const lr=lastG?resFor(lastG,team):null, lopp=lastG?(lastG.h===team?lastG.a:lastG.h):null;
   el.innerHTML='<div class="mt-card"><div class="mt-head"><img class="mt-logo" src="'+team.logo+'" alt=""><div class="mt-id"><div class="eyebrow">Mitt lag</div><h2>'+esc(team.club)+'</h2>'+
     '<div class="mt-stats"><span><b>'+pos+'</b> plats</span><span><b>'+row.p+'</b> poäng</span>'+(()=>{const sr=getSim().rows.find(x=>x.c===team);return sr?'<span title="Slutspelsräknaren"><b>'+pct(sr.top6)+'</b> kvartsfinal</span>':'';})()+'<span class="form">'+row.form.slice(-5).map(f=>'<i class="f '+(f==='V'?'w':f==='Ö'?'o':'l')+'">'+f+'</i>').join('')+'</span></div></div>'+
-    '<div class="mt-act"><button class="mt-all" data-go="'+slug(team.club)+'">Allt om '+esc(team.short)+' →</button><button class="mt-change" data-cal="'+slug(team.club)+'">📅 Kalender</button><button class="mt-change">'+(pickOpen?'Stäng':'Byt lag')+'</button></div></div>'+
+    '<div class="mt-act"><button class="mt-all" data-go="'+slug(team.club)+'">Allt om '+esc(team.short)+' →</button><button class="mt-change" data-cal="'+slug(team.club)+'">📅 Kalender</button><button class="mt-change'+(notif.on?' bell-on':'')+'" data-notif="1">'+(notif.on?'🔔 Notiser på':'🔕 Notiser')+'</button><button class="mt-change">'+(pickOpen?'Stäng':'Byt lag')+'</button></div></div>'+
     (pickOpen?picker:'')+
     '<div class="mt-body">'+nm+
       (lastG?'<div class="mt-last"><div class="lbl">Senaste match</div><div class="mt-res"><img src="'+lopp.logo+'" alt=""><div><b class="r '+lr.cls+'">'+lr.txt+'</b><span>mot '+esc(lopp.short)+' · '+fShort.format(lastG.t)+'</span></div></div></div>':'')+
@@ -1222,7 +1290,7 @@ function drawMyTeam(){
     '</div></div>';
 }
 document.getElementById('myteam').addEventListener('click',e=>{
-  const p=e.target.closest('.mtp'); if(p){ myTeam=p.dataset.team; pickOpen=false; try{localStorage.setItem('shl-myteam',myTeam);}catch(_){} drawMyTeam(); return; }
+  const p=e.target.closest('.mtp'); if(p){ myTeam=p.dataset.team; pickOpen=false; try{localStorage.setItem('shl-myteam',myTeam);}catch(_){} drawMyTeam(); syncNotifTeam(); return; }
   if(e.target.closest('.mt-change')){ pickOpen=!pickOpen; drawMyTeam(); return; }
   const g=e.target.closest('.mt-all'); if(g){ st.club=g.dataset.go; st.mode='club'; location.hash=st.club; render(); document.querySelector('.bar').scrollIntoView({behavior:'smooth'}); }
 });

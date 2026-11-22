@@ -1,4 +1,5 @@
 // SHL-samlingen – Cloudflare Worker
+import { getVapid, sendPush } from './push.js';
 // /api/schedule → SHL:s spelschema med resultat och live-ställning (cache 20 s)
 // /api/videos   → senaste videorna från alla YouTube-kanaler via RSS (cache 10 min)
 // /api/debug    → visar vad SHL svarar (felsökning)
@@ -100,10 +101,97 @@ function buildIcs(games, team) {
   return lines.join('\r\n') + '\r\n';
 }
 
+
+// ---------- Notiser ----------
+const SUBJECT = 'https://shl.theruup.workers.dev';
+async function readSubs(kv) { return (await kv.get('subs', 'json')) || {}; }
+const subKey = ep => { let h = 0; for (let i = 0; i < ep.length; i++) h = (h * 31 + ep.charCodeAt(i)) | 0; return 's' + (h >>> 0).toString(36) + ep.length; };
+const short = t => (t.names && (t.names.short || t.names.long)) || t.code;
+
+async function pushRoutes(request, env, url) {
+  const kv = env.PUSH;
+  if (!kv) return json({ error: 'Notiser är inte aktiverade (KV saknas)' }, 503);
+  if (url.pathname === '/api/push/key') { const v = await getVapid(kv); return json({ key: v.pub }); }
+  if (request.method !== 'POST') return json({ error: 'POST krävs' }, 405);
+  const body = await request.json().catch(() => ({}));
+  const subs = await readSubs(kv);
+  if (url.pathname === '/api/push/subscribe') {
+    const s = body.sub; if (!s || !s.endpoint || !s.keys) return json({ error: 'ogiltig prenumeration' }, 400);
+    subs[subKey(s.endpoint)] = { sub: { endpoint: s.endpoint, keys: s.keys }, team: (body.team || '').toUpperCase(), reminders: body.reminders !== false, goals: body.goals !== false, at: Date.now() };
+    await kv.put('subs', JSON.stringify(subs));
+    return json({ ok: true, count: Object.keys(subs).length });
+  }
+  if (url.pathname === '/api/push/unsubscribe') {
+    if (body.endpoint) { delete subs[subKey(body.endpoint)]; await kv.put('subs', JSON.stringify(subs)); }
+    return json({ ok: true });
+  }
+  if (url.pathname === '/api/push/test') {
+    const rec = body.endpoint && subs[subKey(body.endpoint)];
+    if (!rec) return json({ error: 'hittar ingen prenumeration' }, 404);
+    const v = await getVapid(kv);
+    const st = await sendPush(rec.sub, { title: '🏒 Notiser är på', body: 'Du får påminnelser och mål för ditt lag här.', tag: 'test', url: '/' }, v, SUBJECT);
+    return json({ ok: st < 300, status: st });
+  }
+  return json({ error: 'okänd' }, 404);
+}
+
+// Körs varje minut (cron). Gör inget alls om ingen match är nära.
+async function runNotifications(env, ctx) {
+  const kv = env.PUSH; if (!kv) return;
+  const games = await getSchedule(ctx, 'https://shl.theruup.workers.dev');
+  const now = Date.now();
+  const near = games.filter(g => { const t = Date.parse(g.rawStartDateTime); return t - now < 66 * 60e3 && now - t < 4 * 3600e3; });
+  if (!near.length) return;
+  const subs = await readSubs(kv); const list = Object.entries(subs);
+  if (!list.length) return;
+  const state = (await kv.get('state', 'json')) || { g: {}, rem: {} };
+  let changed = false, subsChanged = false;
+  const msgs = []; // {team codes, type, data}
+  for (const g of near) {
+    const t = Date.parse(g.rawStartDateTime), H = g.homeTeamInfo, A = g.awayTeamInfo, id = g.uuid;
+    const hs = parseInt(H.score, 10) || 0, as = parseInt(A.score, 10) || 0;
+    // Påminnelse en timme innan
+    if (t - now <= 62 * 60e3 && t - now > 0 && !state.rem[id]) {
+      state.rem[id] = 1; changed = true;
+      const tid = new Date(t).toLocaleTimeString('sv-SE', { timeZone: 'Europe/Stockholm', hour: '2-digit', minute: '2-digit' });
+      msgs.push({ teams: [H.code, A.code], type: 'reminders', data: { title: '⏰ Om en timme: ' + short(H) + ' – ' + short(A), body: 'Nedsläpp ' + tid + ' i ' + ((g.venueInfo && g.venueInfo.name) || '') + ' · TV4 Play', tag: 'rem-' + id, url: '/?tab=live' } });
+    }
+    const prev = state.g[id];
+    const live = g.state !== 'pre-game';
+    if (!live) continue;
+    if (!prev) { state.g[id] = { hs, as, st: g.state }; changed = true; if (g.state !== 'post-game') msgs.push({ teams: [H.code, A.code], type: 'goals', data: { title: '🏒 Nedsläpp: ' + short(H) + ' – ' + short(A), body: 'Matchen har börjat. Följ den live.', tag: 'g-' + id, url: '/?tab=live' } }); continue; }
+    if (hs > prev.hs || as > prev.as) {
+      const scorer = hs > prev.hs ? H : A;
+      msgs.push({ teams: [H.code, A.code], type: 'goals', data: { title: '🚨 MÅL ' + short(scorer) + '!', body: short(H) + ' ' + hs + '–' + as + ' ' + short(A), tag: 'g-' + id, url: '/?tab=live' } });
+    }
+    if (g.state === 'post-game' && prev.st !== 'post-game') {
+      msgs.push({ teams: [H.code, A.code], type: 'goals', data: { title: '🏁 Slut: ' + short(H) + ' ' + hs + '–' + as + ' ' + short(A), body: g.shootout ? 'Avgjort på straffar' : g.overtime ? 'Avgjort i förlängning' : 'Slutresultat', tag: 'g-' + id, url: '/?tab=live' } });
+    }
+    if (hs !== prev.hs || as !== prev.as || g.state !== prev.st) { state.g[id] = { hs, as, st: g.state }; changed = true; }
+  }
+  if (msgs.length) {
+    const v = await getVapid(kv);
+    const sends = [];
+    for (const [k, rec] of list) for (const m of msgs) {
+      if (!rec[m.type]) continue;
+      if (rec.team && !m.teams.includes(rec.team)) continue;
+      sends.push(sendPush(rec.sub, m.data, v, SUBJECT).then(st => { if (st === 404 || st === 410) { delete subs[k]; subsChanged = true; } }).catch(() => {}));
+    }
+    await Promise.all(sends);
+  }
+  // städa gammalt tillstånd
+  for (const id of Object.keys(state.g)) if (!games.find(g => g.uuid === id && now - Date.parse(g.rawStartDateTime) < 2 * 86400e3)) { delete state.g[id]; changed = true; }
+  for (const id of Object.keys(state.rem)) if (!games.find(g => g.uuid === id && now - Date.parse(g.rawStartDateTime) < 2 * 86400e3)) { delete state.rem[id]; changed = true; }
+  if (changed) await kv.put('state', JSON.stringify(state));
+  if (subsChanged) await kv.put('subs', JSON.stringify(subs));
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const cache = caches.default;
+
+    if (url.pathname.startsWith('/api/push/')) return pushRoutes(request, env, url);
 
     if (url.pathname === '/api/debug') {
       try {
@@ -174,5 +262,9 @@ export default {
     }
 
     return env.ASSETS.fetch(request);
+  },
+
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(runNotifications(env, ctx));
   }
 };
