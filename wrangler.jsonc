@@ -1,0 +1,10 @@
+{
+  // Cloudflare Workers – SHL-samlingen (videor, poddar, kalender, live)
+  "name": "shl",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  }
+}
