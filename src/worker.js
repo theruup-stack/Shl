@@ -72,6 +72,20 @@ export default {
       } catch (e) { return json({ ok: false, error: String(e) }, 500); }
     }
 
+
+    if (url.pathname === '/api/probe') {
+      // Felsökning/utforskning: hämtar en sida på shl.se eller hockeyallsvenskan.se och visar råtexten
+      const u = url.searchParams.get('u') || '';
+      let target; try { target = new URL(u.startsWith('http') ? u : 'https://www.shl.se' + u); } catch (e) { return json({ error: 'ogiltig url' }, 400); }
+      if (!/(^|\.)shl\.se$|(^|\.)hockeyallsvenskan\.se$|(^|\.)s8y\.se$/.test(target.hostname)) return json({ error: 'host ej tillåten' }, 400);
+      try {
+        const r = await fetch(target.toString(), { headers: HEADERS });
+        const text = await r.text();
+        const max = +(url.searchParams.get('max') || 60000), off = +(url.searchParams.get('off') || 0);
+        return new Response(JSON.stringify({ status: r.status, type: r.headers.get('content-type'), length: text.length, off, body: text.slice(off, off + max) }), { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' } });
+      } catch (e) { return json({ error: String(e) }, 502); }
+    }
+
     if (url.pathname === '/api/schedule') {
       const key = new Request(url.origin + '/api/schedule');
       let res = await cache.match(key);
