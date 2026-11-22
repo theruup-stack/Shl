@@ -155,7 +155,7 @@ body.cal .types,body.cal .search{display:none}
 .next .cd span{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--dim)}
 
 .cal-wrap{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:22px;margin-top:26px;align-items:start}
-@media (max-width:1050px){.cal-wrap{grid-template-columns:1fr}}
+@media (max-width:1050px){.cal-wrap{grid-template-columns:minmax(0,1fr)}}
 .cal-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
 .cal-top{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .cal-top h3{font:800 34px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.5px;min-width:250px}
@@ -168,9 +168,9 @@ body.cal .types,body.cal .search{display:none}
 .mchip b{display:block;font:700 9.5px Inter;color:var(--dim);margin-top:1px}
 .mchip.on{border-color:var(--gold);color:var(--txt);background:rgba(217,180,74,.1)}
 .mchip.on b{color:var(--gold)}
-.wd{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:8px}
+.wd{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-bottom:8px}
 .wd div{font:700 11px Inter;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);text-align:center}
-.grid7{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.grid7{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
 .cell{position:relative;aspect-ratio:1/1;min-height:72px;border-radius:12px;background:var(--bg2);border:1px solid var(--line);padding:8px;display:flex;flex-direction:column;overflow:hidden;transition:transform .15s,border-color .15s,box-shadow .15s}
 .cell.out{opacity:.22}
 .cell .dn{font:700 15px "Barlow Condensed",sans-serif;color:var(--mut)}
@@ -263,7 +263,7 @@ body.cal .types,body.cal .search{display:none}
 .nb-list .lbl{margin-bottom:10px}
 .up{display:grid;grid-template-columns:92px 22px 26px 1fr auto;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:10px;text-align:left;border:1px solid transparent;transition:.15s}
 .up:hover{background:var(--bg2);border-color:var(--line2)}
-.up .d{color:var(--mut);font-size:12px;text-transform:capitalize}
+.up .d{color:var(--mut);font-size:12px}
 .up img{width:26px;height:26px;border-radius:50%;background:#fff}
 .up .o{font:700 15px "Barlow Condensed",sans-serif;text-transform:uppercase}
 .up .tm2{color:var(--gold2);font:700 14px "Barlow Condensed",sans-serif}
@@ -377,6 +377,124 @@ body.cal .types,body.live .types,body.live .search{display:none}
 .ltc .ch span{display:block;font-size:11px;color:var(--dim);margin-top:2px}
 .ltc .t{padding:8px 12px 13px;font:600 13px/1.35 Inter;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:48px}
 @media (max-width:640px){.lt-strip{grid-auto-columns:230px}.lt-h h2{font-size:24px}.lt-h .n{display:none}}
+
+/* RESPONSIVE: segment icons on desktop */
+.seg button{display:flex;align-items:center;gap:7px}
+.seg .mi{flex:0 0 auto;opacity:.75}
+.seg button.on .mi{opacity:1;color:var(--gold2)}
+.seg .ms{display:none}
+.seg .livei{width:18px;height:18px;display:grid;place-items:center}
+.seg .livei .dot{width:8px;height:8px;margin:0}
+html{-webkit-text-size-adjust:100%}
+img{max-width:100%}
+@media (hover:none){.card:hover,.ltc:hover,.nd-game:hover,.lc:hover,.cell.gd:hover{transform:none}}
+
+/* ---------- MOBILE ---------- */
+.club-head>div{min-width:0}.club-head h2{overflow-wrap:anywhere}.cal-card{min-width:0}
+@media (max-width:760px){
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  .wrap{padding:0 14px}
+  .hero{padding:26px 0 8px}
+  h1{font-size:44px}
+  .lead{font-size:13.5px}
+  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:16px}
+  .stat b{font-size:22px}.stat span{font-size:8.5px;letter-spacing:.6px}
+  .rail{gap:4px;padding-top:16px;margin:0 -14px;padding-left:14px;padding-right:14px}
+  .club-btn{width:66px;padding:8px 2px}
+  .club-btn img,.club-btn.all .ico{width:40px;height:40px}
+  .club-btn span{font-size:9.5px}
+  /* toolbar: search + chips only; tabs become bottom app bar */
+  .bar .wrap{gap:8px;padding-top:8px;padding-bottom:8px}
+  .search{flex:1 1 100%}
+  .search input{padding:10px 8px;font-size:15px}
+  .sortbtn{padding:0 10px;font-size:12px}
+  .types{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -14px;padding:0 14px;width:calc(100% + 28px)}
+  .types::-webkit-scrollbar{display:none}
+  .tchip{flex:0 0 auto}
+  #mode{position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(5,1fr);border-radius:0;border:0;border-top:1px solid var(--line2);padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:rgba(9,12,18,.92);backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%)}
+  #mode button{flex-direction:column;gap:3px;padding:6px 0;border-radius:10px;font-size:10.5px;box-shadow:none!important;background:none!important}
+  #mode button.on{color:var(--gold2)}
+  #mode button.on .mi{color:var(--gold2)}
+  #mode .ml{display:none}#mode .ms{display:block}
+  #mode .mi{width:22px;height:22px}
+  /* latest */
+  .latest{margin-bottom:10px}
+  .lt-h h2{font-size:23px}.lt-h .nav,.row-h .nav{display:none}
+  .lt-strip{grid-auto-columns:76%;margin:0 -14px;padding-left:14px;padding-right:14px;scroll-padding-left:14px}
+  /* club view */
+  .club{margin-top:28px}
+  .club-head{gap:12px}
+  .club-head img{width:46px;height:46px}
+  .club-head h2{font-size:27px}
+  .club-head .meta{gap:8px;font-size:11.5px}
+  .club-head .chlink{padding:7px 9px}
+  .strip{grid-auto-columns:72%;margin:0 -14px;padding-left:14px;padding-right:14px;scroll-padding-left:14px}
+  .row-h .lbl{font-size:14px}
+  #out .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .grid .cb{padding:9px 9px 10px}.grid .cb .t{font-size:12.5px}
+  .grid .cb .m .dot,.grid .cb .m span:nth-child(3){display:none}
+  #out .feed-day h3{font-size:17px}
+  .pod-intro{padding:18px}.pod-intro h2{font-size:24px}.pod-logos{margin-left:0}
+  .fr-hero{padding:20px;gap:14px}.fr-hero img{width:64px;height:64px}.fr-hero h2{font-size:36px}
+  /* calendar */
+  .cal-hero{padding:18px;gap:14px;margin-top:22px}
+  .cal-hero .big{width:58px;height:58px}
+  .cal-hero h2{font-size:32px}
+  .cal-hero p{font-size:12.5px}
+  .cal-hero .hx{flex:1;min-width:0}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%;margin-left:0}
+  .kpi{min-width:0;padding:9px 4px}.kpi b{font-size:22px}.kpi span{font-size:8.5px;letter-spacing:.6px}
+  .nextday{padding:16px}
+  .nd-head h3{font-size:26px}
+  .nd-head .cd{margin-left:0}
+  .cd div{min-width:52px;padding:7px 4px}.cd b{font-size:21px}
+  .nd-grid{grid-template-columns:1fr}
+  .nb-main,.nb-list{padding:16px}
+  .up{grid-template-columns:78px 20px 24px 1fr auto;gap:8px;padding:8px 4px}
+  .cal-card{padding:12px;border-radius:14px}
+  .cal-top{display:grid;grid-template-columns:38px 1fr 38px auto;gap:8px;align-items:center}
+  .cal-top h3{font-size:22px;min-width:0;text-align:center}
+  .cal-top .haseg{grid-column:1/-1;margin-left:0;justify-content:center}
+  .cal-top .haseg button{flex:1}
+  .mchips{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -12px 12px;padding:0 12px}
+  .mchips::-webkit-scrollbar{display:none}
+  .mchip{flex:0 0 auto;min-width:58px}
+  .wd div{font-size:9.5px;letter-spacing:.5px}
+  .grid7,.wd{gap:4px}
+  .cell{min-height:52px;padding:4px;border-radius:9px}
+  .cell .dn{font-size:13px}
+  .cell .pairs,.cell .ft{display:none}
+  .cell .top{flex-direction:column;align-items:flex-start;gap:2px}
+  .cell .cnt{min-width:16px;height:16px;font-size:9px}
+  .cell.tm .tlogo{width:60%;top:52%}
+  .cell.tm .foot{left:3px;right:3px;bottom:3px}
+  .cell.tm .foot .ha,.cell.tm .foot .opp,.cell.tm .foot .on,.cell.tm .tmx{display:none}
+  .cell.tm .res{top:3px;right:3px;font-size:8px;padding:1px 3px}
+  .cell.today::after{font-size:7px;padding:1px 3px}
+  .legend{font-size:10.5px;gap:8px}
+  .game{padding:10px;gap:6px}.game .tm{font-size:12px}.game .tm img{width:26px;height:26px}
+  /* live */
+  .live-hero{padding:18px;margin-top:22px}
+  .live-hero h2{font-size:38px}
+  .live-hero p{font-size:12.5px}
+  .live-hero .kpis{grid-template-columns:repeat(2,1fr)}
+  .lsec{margin-top:26px}
+  .lsec-h{flex-direction:column;gap:2px}
+  .lsec-h h3{font-size:24px}
+  .lgrid{grid-template-columns:1fr;gap:10px}
+  .lc{padding:14px 12px 10px}
+  .lt img{width:50px;height:50px}.lt b{font-size:16px}
+  .sc b{font-size:40px}
+  .lc-foot{font-size:11px}
+  .tbl.big{min-width:640px;font-size:12.5px}
+  .tblwrap{margin:0 -12px;padding:12px}
+  footer{padding-bottom:20px}
+}
+@media (max-width:380px){
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  #mode button{font-size:9.5px}
+}
 /* FEED */
 .feed-day{margin-top:32px}
 .feed-day h3{font:700 20px "Barlow Condensed",sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:12px;margin-bottom:14px}
@@ -408,13 +526,13 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--dim);fon
         <span id="sortlbl">Nyast först</span>
       </button>
     </div>
-    <div class="seg" id="mode">
-      <button data-m="club" class="on">Per klubb</button>
-      <button data-m="feed">Senaste flödet</button>
-      <button data-m="pods">🎙 Poddar &amp; media</button>
-      <button data-m="cal">📅 Kalender</button>
-      <button data-m="live"><span class="dot" style="width:7px;height:7px;margin-right:5px"></span>Live</button>
-    </div>
+    <nav class="seg" id="mode">
+      <button data-m="club" class="on"><svg class="mi" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8.5-7 10-3.5-1.5-7-5-7-10V6z"/></svg><span class="ml">Per klubb</span><span class="ms">Klubbar</span></button>
+      <button data-m="feed"><svg class="mi" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg><span class="ml">Senaste flödet</span><span class="ms">Flödet</span></button>
+      <button data-m="pods"><svg class="mi" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5"/></svg><span class="ml">Poddar &amp; media</span><span class="ms">Poddar</span></button>
+      <button data-m="cal"><svg class="mi" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span class="ml">Kalender</span><span class="ms">Kalender</span></button>
+      <button data-m="live"><span class="mi livei"><span class="dot"></span></span><span class="ml">Live</span><span class="ms">Live</span></button>
+    </nav>
     <div class="types" id="types"></div>
   </div>
 </div>
@@ -764,6 +882,11 @@ function drawLatest(){
 document.getElementById('latest').addEventListener('click',e=>{const b=e.target.closest('.nav button'); if(!b) return; const s=document.querySelector('.lt-strip'); s.scrollBy({left:+b.dataset.dir*s.clientWidth*0.85,behavior:'smooth'});});
 function fromHash(){ const h=location.hash.slice(1); if(h.startsWith('pod-')){const el=document.getElementById(h); if(el) el.scrollIntoView({behavior:'smooth'}); return false;} st.club = D.some(c=>slug(c.club)===h)?h:''; return true; }
 addEventListener('hashchange',()=>{ if(fromHash()) render(); });
+
+/* flytta flikraden till botten på mobil (utanför .bar, som har backdrop-filter) */
+(function(){const mq=matchMedia('(max-width:760px)'),mode=document.getElementById('mode'),types=document.getElementById('types');
+  const place=()=>{ if(mq.matches){ if(mode.parentElement!==document.body) document.body.appendChild(mode); } else if(mode.nextElementSibling!==types){ types.parentElement.insertBefore(mode,types); } };
+  place(); (mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));})();
 fromHash(); drawLatest(); render();
 </script>
 </body>
