@@ -509,6 +509,72 @@ img{max-width:100%}
 .pp.on{border-color:var(--pd);background:linear-gradient(160deg,color-mix(in srgb,var(--pd) 22%,var(--card2)),var(--card));box-shadow:0 0 0 1px var(--pd),0 12px 30px rgba(0,0,0,.4)}
 .pp.on small{color:var(--pd)}
 @media (max-width:760px){.podpicks{display:flex;overflow-x:auto;scrollbar-width:none;margin:16px -18px 0;padding:2px 18px 4px;gap:8px}.podpicks::-webkit-scrollbar{display:none}.pp{flex:0 0 104px;padding:12px 6px 10px}.pp img,.pp .all{width:44px;height:44px}.pp b{font-size:12.5px}}
+
+/* MITT LAG */
+.myteam{margin-top:6px;margin-bottom:26px}
+.mt-cta,.mt-card{border-radius:20px;border:1px solid rgba(217,180,74,.35);background:radial-gradient(700px 260px at 0% 0%,rgba(217,180,74,.16),transparent 70%),linear-gradient(160deg,var(--card2),var(--card));box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.mt-cta{padding:22px 24px}
+.mt-cta h2,.mt-id h2{font:800 34px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;margin-top:6px}
+.mt-cta p{color:var(--mut);font-size:13px;margin-top:6px;max-width:560px}
+.mt-pick{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin-top:18px}
+.mtp{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border-radius:12px;border:1px solid var(--line2);background:rgba(7,9,13,.45);transition:.15s}
+.mtp img{width:42px;height:42px;border-radius:50%;background:#fff;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+.mtp span{font:600 11px Inter;color:var(--mut)}
+.mtp:hover,.mtp.on{border-color:var(--gold)}.mtp.on span{color:var(--gold2)}
+.mt-card{padding:22px 24px}
+.mt-card .mt-pick{margin:0 0 18px}
+.mt-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.mt-logo{width:84px;height:84px;border-radius:50%;background:#fff;box-shadow:0 12px 30px rgba(0,0,0,.55),0 0 0 3px var(--gold)}
+.mt-id{min-width:0}
+.mt-stats{display:flex;align-items:center;gap:14px;margin-top:8px;color:var(--mut);font-size:13px;flex-wrap:wrap}
+.mt-stats b{color:var(--txt);font:800 20px "Barlow Condensed",sans-serif;margin-right:2px}
+.mt-stats .form{display:flex;gap:4px}
+.mt-stats .f{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;font:800 10px Inter;font-style:normal}
+.mt-act{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.mt-all,.mt-change{padding:9px 14px;border-radius:10px;font:600 12.5px Inter;border:1px solid var(--line2);color:var(--mut);transition:.15s}
+.mt-all{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1405;border:0}
+.mt-change:hover{border-color:var(--gold);color:var(--txt)}
+.mt-body{display:grid;grid-template-columns:240px 200px minmax(0,1fr);gap:16px;margin-top:20px;align-items:stretch}
+.mt-body .lbl{margin-bottom:10px}
+.mt-next,.mt-last,.mt-vids{padding:16px;border-radius:14px;background:rgba(7,9,13,.5);border:1px solid var(--line2);min-width:0}
+.mt-next{text-align:center;display:flex;flex-direction:column;align-items:center}
+.mt-next.live{border-color:rgba(255,90,78,.6)}
+.mt-next.live .lbl{color:#ff7a70;display:flex;align-items:center;gap:6px}
+.mt-duel{display:flex;align-items:center;justify-content:center;gap:14px}
+.mt-duel img{width:46px;height:46px;border-radius:50%;background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.5)}
+.mt-duel .mid b{display:block;font:800 30px/1 "Barlow Condensed",sans-serif;color:var(--gold2)}
+.mt-duel .mid b.sc{color:#fff}
+.mt-duel .mid span{display:block;font-size:11px;color:var(--mut);margin-top:3px}
+.mt-vs{font:700 14px "Barlow Condensed",sans-serif;text-transform:uppercase;margin-top:8px;color:var(--mut)}
+.cd.mini{margin-top:10px;gap:6px}.cd.mini div{min-width:46px;padding:6px 4px}.cd.mini b{font-size:19px}
+.mt-res{display:flex;align-items:center;gap:12px}
+.mt-res img{width:42px;height:42px;border-radius:50%;background:#fff}
+.mt-res b.r{display:inline-block;font:800 18px "Barlow Condensed",sans-serif;padding:3px 8px;border-radius:7px}
+.mt-res b.r.w{background:#2fd08a;color:#04140c}.mt-res b.r.l{background:#ff5a4e;color:#1a0503}.mt-res b.r.o{background:#4d9bff;color:#030d1a}
+.mt-res span{display:block;color:var(--mut);font-size:12px;margin-top:5px}
+.mt-strip{display:grid;grid-auto-flow:column;grid-auto-columns:200px;gap:12px;overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--line2) transparent;padding-bottom:6px}
+.mtv{display:block;border-radius:12px;overflow:hidden;background:var(--card);border:1px solid var(--line);transition:.2s}
+.mtv:hover{border-color:var(--c);transform:translateY(-2px)}
+.mtv .th{position:relative;aspect-ratio:16/9;background:#0a0d14}
+.mtv .th img{width:100%;height:100%;object-fit:cover;display:block}
+.mtv .tag{position:absolute;left:6px;top:6px;font:700 9px Inter;letter-spacing:.6px;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:var(--c);color:#06080c}
+.mtv .t{padding:8px 9px 2px;font:600 12px/1.3 Inter;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:38px}
+.mtv .m{padding:0 9px 9px;font-size:10.5px;color:var(--dim)}
+@media (max-width:1100px){.mt-body{grid-template-columns:1fr 1fr}.mt-vids{grid-column:1/-1}}
+@media (max-width:760px){
+  .mt-cta,.mt-card{padding:16px;border-radius:16px}
+  .mt-cta h2,.mt-id h2{font-size:28px}
+  .mt-pick{display:flex;overflow-x:auto;scrollbar-width:none;margin-left:-16px;margin-right:-16px;padding:0 16px}
+  .mt-pick::-webkit-scrollbar{display:none}
+  .mtp{flex:0 0 72px}
+  .mt-logo{width:58px;height:58px}
+  .mt-head{gap:12px}.mt-id{flex:1}
+  .mt-act{margin-left:0;width:100%}.mt-act button{flex:1}
+  .mt-body{grid-template-columns:1fr 1fr;gap:10px}
+  .mt-next,.mt-last,.mt-vids{padding:12px}
+  .mt-duel{gap:8px}.mt-duel img{width:36px;height:36px}.mt-duel .mid b{font-size:24px}
+  .mt-strip{grid-auto-columns:64%;margin:0 -12px;padding:0 12px 4px}
+}
 /* FEED */
 .feed-day{margin-top:32px}
 .feed-day h3{font:700 20px "Barlow Condensed",sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:12px;margin-bottom:14px}
@@ -528,6 +594,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--dim);fon
   <div class="stats" id="stats"></div>
   <nav class="rail" id="rail"></nav>
 </header>
+<section class="wrap myteam" id="myteam"></section>
 <section class="wrap latest" id="latest"></section>
 
 <div class="bar">
@@ -690,6 +757,7 @@ async function pollLive(){
     GAMES.sort((a,b)=>a.t-b.t); for(const k in BYDAY) delete BYDAY[k]; GAMES.forEach(g=>(BYDAY[g.day]=BYDAY[g.day]||[]).push(g));
     liveStamp=new Date(); liveErr=false; liveOn=true;
   }catch(e){ liveErr=true; if(!liveOn) return; }
+  drawMyTeam();
   if(st.mode==='live'||st.mode==='cal') render();
 }
 let liveErr=false;
@@ -761,7 +829,7 @@ const TYPES = [
   {k:'Podd',c:'var(--pd)'}
 ];
 const TC = Object.fromEntries(TYPES.map(t=>[t.k,t.c]));
-const NOW = 1795366800000;
+let NOW = 1795366800000;
 const st = {club:'', q:'', asc:false, mode:'club', types:new Set()};
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const slug = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-');
@@ -804,7 +872,7 @@ document.getElementById('mode').onclick = e => { const b=e.target.closest('butto
 
 function card(v,c,showClub){
   return '<a class="card" style="--c:'+TC[v.cat]+'" href="https://www.youtube.com/watch?v='+v.v+'" target="_blank" rel="noopener">'+
-    '<div class="th">'+(v.thumb?'<img loading="lazy" src="'+v.thumb+'" alt="">':'')+
+    '<div class="th">'+(v.thumb?'<img loading="lazy" src="'+v.thumb+'" alt="" onerror="this.remove()">':'')+
     '<span class="tag">'+v.cat+'</span>'+(v.sdhl?'<span class="sdhl">SDHL</span>':'')+(v.dur?'<span class="dur">'+v.dur+'</span>':'')+
     '<div class="play"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div></div>'+
     '<div class="cb">'+(showClub?'<div class="club-mini"><img src="'+(v.pod?v.pod.logo:c.logo)+'" alt="">'+esc(v.pod?v.pod.name:c.club)+'</div>':'')+
@@ -900,10 +968,82 @@ function drawLatest(){
   const el=document.getElementById('latest');
   el.innerHTML='<div class="lt-h"><div><div class="eyebrow">Nytt just nu</div><h2>Senaste från varje kanal</h2></div><span class="n">'+items.length+' kanaler · nyast först</span><div class="nav"><button data-dir="-1" aria-label="Bakåt">‹</button><button data-dir="1" aria-label="Framåt">›</button></div></div>'+
     '<div class="lt-strip">'+items.map(({v,name,logo,kind})=>'<a class="ltc" style="--c:'+TC[v.cat]+'" href="https://www.youtube.com/watch?v='+v.v+'" target="_blank" rel="noopener">'+
-      '<div class="th">'+(v.thumb?'<img loading="lazy" src="'+v.thumb+'" alt="">':'')+'<span class="tag">'+v.cat+'</span>'+(v.dur?'<span class="dur">'+v.dur+'</span>':'')+(NOW-v.ts<864e5?'<span class="nyt">NYTT</span>':'')+'<div class="play"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div></div>'+
+      '<div class="th">'+(v.thumb?'<img loading="lazy" src="'+v.thumb+'" alt="" onerror="this.remove()">':'')+'<span class="tag">'+v.cat+'</span>'+(v.dur?'<span class="dur">'+v.dur+'</span>':'')+(NOW-v.ts<864e5?'<span class="nyt">NYTT</span>':'')+'<div class="play"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div></div>'+
       '<div class="ch"><img src="'+logo+'" alt=""><div><b>'+esc(name)+'</b><span>'+kind+' · '+when(v.ts)+'</span></div></div><div class="t">'+esc(v.title)+'</div></a>').join('')+'</div>';
 }
 document.getElementById('latest').addEventListener('click',e=>{const b=e.target.closest('.nav button'); if(!b) return; const s=document.querySelector('.lt-strip'); s.scrollBy({left:+b.dataset.dir*s.clientWidth*0.85,behavior:'smooth'});});
+
+/* ---------- NYA VIDEOR (YouTube RSS via /api/videos) ---------- */
+const HOCKEY_RE=/hockey|shl|nhl|puck|kronor|frölunda|brynäs|färjestad|djurgård|\bdif\b|hv71|luleå|skellefteå|rögle|timrå|växjö|malmö|linköping|\blhc\b|örebro|björklöven|målvakt|slutspel|hockeyallsvensk|hockeypuls/i;
+const HOCKEY_ONLY=new Set(['Expressen Sport','Sportbladet','Sportstudion']);
+function catOf(t){
+  const l=t.normalize('NFC').toLowerCase(); const has=a=>a.some(k=>l.includes(k));
+  if(l.includes('presskonferens')) return 'Presskonferens';
+  if(has(['highlight','höjdpunkt','🚨','trycker in','fullträff','ökar på','sätter','gör sitt','ledningen','spiken i kistan','håller nollan','storseger','kvitterar','reducerar','avgör','vinner','vidare till','mål'])) return 'Highlights';
+  if(has(['inifrån','insidan','inside','bakom','hemma hos',"mic'd",'rundtur','en dag med','eftersnack','vägen','eliten','tröjhiss','hissar','hänger i taket','invigning','lagfoto','tur och retur','advent','julshow','intro','mukbang','vem är mest','informerar','upptakt','förberedelser','klubbmärke','lagmöte','tack för allt','matchdag','besöker','hyllningsfilm','träningsmatch','på plats','tillbakablick','resa'])) return 'Inifrån';
+  return 'Intervju';
+}
+let videosLive=false;
+async function loadVideos(){
+  let j; try{ j=await fetch('/api/videos',{cache:'no-store'}).then(r=>{if(!r.ok) throw 0; return r.json();}); }catch(e){ return; }
+  const feeds=j.channels||{}; let added=0;
+  const srcs=D.map(c=>({o:c,kind:'club'})).concat(P.map(p=>({o:p,kind:p===L?'liga':'pod'})));
+  for(const {o,kind} of srcs){
+    const feed=feeds[o.id]; if(!feed) continue;
+    const byId=new Map(o.videos.map(v=>[v.v,v]));
+    for(const f of feed){
+      const ts=Date.parse(f.published); if(isNaN(ts)) continue;
+      const fmtV=f.views?f.views.toLocaleString('sv-SE'):'';
+      let v=byId.get(f.v);
+      if(v){ v.ts=ts; if(fmtV) v.views=fmtV; continue; }
+      if(HOCKEY_ONLY.has(o.name)&&!HOCKEY_RE.test(f.title)) continue;
+      v={v:f.v,title:f.title,dur:f.short?'Short':'',views:fmtV,ts,thumb:'https://i.ytimg.com/vi/'+f.v+'/mqdefault.jpg',cat:kind==='club'?catOf(f.title):kind==='liga'?'Highlights':'Podd'};
+      if(kind!=='club'){ v.pod=o; v.clubs=D.filter(c=>ALIAS[c.club]&&ALIAS[c.club].test(v.title)); ALLPOD.push(v); }
+      o.videos.push(v); added++;
+    }
+  }
+  NOW=Date.now(); videosLive=true;
+  drawMyTeam(); drawLatest(); render();
+}
+
+/* ---------- MITT LAG ---------- */
+let myTeam=''; try{ myTeam=localStorage.getItem('shl-myteam')||''; }catch(e){}
+let pickOpen=false;
+function drawMyTeam(){
+  const el=document.getElementById('myteam'); if(!el) return;
+  const team=D.find(c=>slug(c.club)===myTeam);
+  const picker='<div class="mt-pick">'+D.map(c=>'<button class="mtp'+(team===c?' on':'')+'" data-team="'+slug(c.club)+'"><img src="'+c.logo+'" alt=""><span>'+esc(c.short)+'</span></button>').join('')+'</div>';
+  if(!team){
+    el.innerHTML='<div class="mt-cta"><div><div class="eyebrow">Mitt lag</div><h2>Välj ditt lag</h2><p>Då visas lagets nästa match, form, tabellplats och senaste klipp här högst upp varje gång du öppnar sidan.</p></div>'+picker+'</div>';
+    return;
+  }
+  const tbl=standings(true), row=tbl.find(r=>r.c===team), pos=tbl.indexOf(row)+1;
+  const now=new Date(); const games=GAMES.filter(g=>g.h===team||g.a===team);
+  const liveG=games.find(g=>typeof isLiveG==='function'&&isLiveG(g));
+  const nextG=liveG||games.find(g=>!g.played&&g.t>now)||games.find(g=>!g.played);
+  const lastG=[...games].reverse().find(g=>g.played);
+  const vids=team.videos.concat(L.videos.filter(v=>v.clubs&&v.clubs.includes(team)),ALLPOD.filter(v=>v.cat==='Podd'&&v.clubs&&v.clubs.includes(team))).sort((a,b)=>b.ts-a.ts).slice(0,8);
+  let nm='';
+  if(nextG){ const home=nextG.h===team, opp=home?nextG.a:nextG.h, live=liveG===nextG;
+    const ms=Math.max(0,nextG.t-now), dd=Math.floor(ms/864e5), hh=Math.floor(ms%864e5/36e5), mm=Math.floor(ms%36e5/6e4);
+    nm='<div class="mt-next'+(live?' live':'')+'"><div class="lbl">'+(live?'<span class="dot"></span>Pågår nu':'Nästa match · '+(home?'Hemma':'Borta'))+'</div><div class="mt-duel"><img src="'+nextG.h.logo+'" alt=""><div class="mid">'+(live?'<b class="sc">'+nextG.hs+'–'+nextG.as+'</b>':'<b>'+nextG.time+'</b>')+'<span>'+(live?esc(nextG.venue):fShort.format(nextG.t))+'</span></div><img src="'+nextG.a.logo+'" alt=""></div><div class="mt-vs">'+esc(nextG.h.short)+' – '+esc(nextG.a.short)+'</div>'+
+      (live?'':'<div class="cd mini" data-t="'+(+nextG.t)+'"><div><b>'+dd+'</b><span>d</span></div><div><b>'+pad(hh)+'</b><span>tim</span></div><div><b>'+pad(mm)+'</b><span>min</span></div></div>')+'</div>';
+  }
+  const lr=lastG?resFor(lastG,team):null, lopp=lastG?(lastG.h===team?lastG.a:lastG.h):null;
+  el.innerHTML='<div class="mt-card"><div class="mt-head"><img class="mt-logo" src="'+team.logo+'" alt=""><div class="mt-id"><div class="eyebrow">Mitt lag</div><h2>'+esc(team.club)+'</h2>'+
+    '<div class="mt-stats"><span><b>'+pos+'</b> plats</span><span><b>'+row.p+'</b> poäng</span><span class="form">'+row.form.slice(-5).map(f=>'<i class="f '+(f==='V'?'w':f==='Ö'?'o':'l')+'">'+f+'</i>').join('')+'</span></div></div>'+
+    '<div class="mt-act"><button class="mt-all" data-go="'+slug(team.club)+'">Allt om '+esc(team.short)+' →</button><button class="mt-change">'+(pickOpen?'Stäng':'Byt lag')+'</button></div></div>'+
+    (pickOpen?picker:'')+
+    '<div class="mt-body">'+nm+
+      (lastG?'<div class="mt-last"><div class="lbl">Senaste match</div><div class="mt-res"><img src="'+lopp.logo+'" alt=""><div><b class="r '+lr.cls+'">'+lr.txt+'</b><span>mot '+esc(lopp.short)+' · '+fShort.format(lastG.t)+'</span></div></div></div>':'')+
+      '<div class="mt-vids"><div class="lbl">Senaste klippen</div><div class="mt-strip">'+vids.map(v=>'<a class="mtv" href="https://www.youtube.com/watch?v='+v.v+'" target="_blank" rel="noopener" style="--c:'+TC[v.cat]+'"><div class="th">'+(v.thumb?'<img loading="lazy" src="'+v.thumb+'" alt="" onerror="this.remove()">':'')+'<span class="tag">'+v.cat+'</span></div><div class="t">'+esc(v.title)+'</div><div class="m">'+(v.pod?esc(v.pod.name)+' · ':'')+when(v.ts)+'</div></a>').join('')+'</div></div>'+
+    '</div></div>';
+}
+document.getElementById('myteam').addEventListener('click',e=>{
+  const p=e.target.closest('.mtp'); if(p){ myTeam=p.dataset.team; pickOpen=false; try{localStorage.setItem('shl-myteam',myTeam);}catch(_){} drawMyTeam(); return; }
+  if(e.target.closest('.mt-change')){ pickOpen=!pickOpen; drawMyTeam(); return; }
+  const g=e.target.closest('.mt-all'); if(g){ st.club=g.dataset.go; st.mode='club'; location.hash=st.club; render(); document.querySelector('.bar').scrollIntoView({behavior:'smooth'}); }
+});
 function fromHash(){ const h=location.hash.slice(1); if(h.startsWith('pod-')){const el=document.getElementById(h); if(el) el.scrollIntoView({behavior:'smooth'}); return false;} st.club = D.some(c=>slug(c.club)===h)?h:''; return true; }
 addEventListener('hashchange',()=>{ if(fromHash()) render(); });
 
@@ -911,7 +1051,7 @@ addEventListener('hashchange',()=>{ if(fromHash()) render(); });
 (function(){const mq=matchMedia('(max-width:760px)'),mode=document.getElementById('mode'),types=document.getElementById('types');
   const place=()=>{ if(mq.matches){ if(mode.parentElement!==document.body) document.body.appendChild(mode); } else if(mode.nextElementSibling!==types){ types.parentElement.insertBefore(mode,types); } };
   place(); (mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));})();
-fromHash(); drawLatest(); render();
+fromHash(); drawMyTeam(); drawLatest(); render(); loadVideos();
 </script>
 </body>
 </html>
