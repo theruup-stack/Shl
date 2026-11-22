@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SHL – klubbarnas YouTube-videor</title>
+<meta name="theme-color" content="#07090d">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/favicon-64.png">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SHL">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -575,6 +583,90 @@ img{max-width:100%}
   .mt-duel{gap:8px}.mt-duel img{width:36px;height:36px}.mt-duel .mid b{font-size:24px}
   .mt-strip{grid-auto-columns:64%;margin:0 -12px;padding:0 12px 4px}
 }
+
+/* TOPLINE / INSTALL */
+.topline{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.installbtn{padding:7px 12px;border-radius:999px;border:1px solid rgba(217,180,74,.45);background:rgba(217,180,74,.1);color:var(--gold2);font:600 12px Inter}
+.installbtn[hidden]{display:none}
+/* MODAL */
+body.noscroll{overflow:hidden}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(3,5,9,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity .2s}
+.modal.show{opacity:1}
+.modal[hidden]{display:none}
+.mbox{position:relative;width:min(640px,100%);max-height:88vh;overflow:auto;border-radius:22px;border:1px solid var(--line2);background:linear-gradient(170deg,var(--card2),var(--bg2));box-shadow:0 40px 100px rgba(0,0,0,.7);padding:26px;transform:translateY(14px) scale(.98);transition:transform .22s}
+.modal.show .mbox{transform:none}
+.mclose{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line2);color:var(--mut);background:var(--bg2);z-index:2}
+.mclose:hover{color:var(--txt);border-color:var(--gold)}
+.mx-head{display:flex;gap:16px;align-items:flex-start;padding-right:30px}
+.mx-head img{width:64px;height:64px;border-radius:50%;background:#fff;flex:0 0 auto}
+.mx-head h3{font:800 28px/1.05 "Barlow Condensed",sans-serif;text-transform:uppercase;margin-top:6px}
+.mx-head p{color:var(--mut);font-size:13px;margin-top:8px}
+.mx-opts{display:grid;gap:10px;margin-top:20px}
+.mx-opt{display:block;text-align:left;width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line2);background:rgba(7,9,13,.5);transition:.15s}
+.mx-opt:hover{border-color:var(--gold)}
+.mx-opt b{display:block;font:600 14px Inter}
+.mx-opt span{display:block;color:var(--dim);font-size:12px;margin-top:3px;overflow-wrap:anywhere}
+.kbtn{cursor:pointer;border-color:rgba(217,180,74,.45)!important;background:rgba(217,180,74,.08)!important;transition:.15s}
+.kbtn:hover{background:rgba(217,180,74,.16)!important}
+.kbtn span{color:var(--gold2)!important}
+/* MATCHCENTER */
+.mc-hero{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:8px 0 16px}
+.mc-team{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.mc-team img{width:76px;height:76px;border-radius:50%;background:#fff;box-shadow:0 10px 28px rgba(0,0,0,.6)}
+.mc-team b{font:800 22px/1 "Barlow Condensed",sans-serif;text-transform:uppercase}
+.mc-team span{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim)}
+.mc-mid{text-align:center}
+.mc-score{display:block;font:800 56px/1 "Barlow Condensed",sans-serif}
+.mc-score em{font-style:normal;color:var(--dim);margin:0 6px}
+.mc-score.t{color:var(--gold2);font-size:46px}
+.mc-st{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font:700 11px Inter;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+.mc-st.live{color:#ff7a70}
+.mc-meta{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:var(--mut);font-size:12.5px}
+.mc-sec{margin-top:18px}
+.mc-sec:empty{display:none}
+.mc-sec h4{font:800 18px "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;color:var(--gold2)}
+.mc-h2h-sum{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px;color:var(--mut);font-size:13px}
+.mc-h2h-sum b{font:800 26px "Barlow Condensed",sans-serif;color:var(--txt);margin-right:4px}
+.mc-h2h-sum .sep{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--dim)}
+.mc-h2h{display:grid;grid-template-columns:76px 1fr auto 1fr;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;background:rgba(7,9,13,.45);border:1px solid var(--line);margin-bottom:6px;font-size:12.5px}
+.mc-h2h.cur{border-color:var(--gold)}
+.mc-h2h .d{color:var(--dim);font-size:11.5px}
+.mc-h2h .tt{display:flex;align-items:center;gap:7px;min-width:0}
+.mc-h2h .tt.r{justify-content:flex-end}
+.mc-h2h .tt img{width:22px;height:22px;border-radius:50%;background:#fff}
+.mc-h2h b{font:800 17px "Barlow Condensed",sans-serif;min-width:48px;text-align:center}
+.mc-tl{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:rgba(7,9,13,.45);border:1px solid var(--line);margin-bottom:8px}
+.mc-tl img{width:36px;height:36px;border-radius:50%;background:#fff}
+.mc-tl b{display:block;font:700 16px "Barlow Condensed",sans-serif;text-transform:uppercase}
+.mc-tl span{display:block;color:var(--dim);font-size:11.5px}
+.mc-tl .form{margin-left:auto;display:flex;gap:3px}
+.mc-tl .f{width:18px;height:18px;border-radius:4px;display:grid;place-items:center;font:800 9px Inter;font-style:normal}
+.mc-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.mx-btn{flex:1;text-align:center;padding:11px 14px;border-radius:12px;font:700 13px Inter;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#1a1405}
+.mx-btn.ghost{background:none;border:1px solid var(--line2);color:var(--mut)}
+.ev{display:grid;grid-template-columns:52px 26px 1fr;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(7,9,13,.45);border:1px solid var(--line);margin-bottom:6px;font-size:13px}
+.ev .tm{color:var(--dim);font:700 12px Inter}
+.ev img{width:24px;height:24px;border-radius:50%;background:#fff}
+.ev b{font-weight:600}.ev small{display:block;color:var(--dim);font-size:11.5px}
+.ev.goal{border-color:rgba(47,208,138,.35)}.ev.pen{border-color:rgba(255,90,78,.3)}
+[data-g]{cursor:pointer}
+/* SIM */
+.tbl.sim td.sb{min-width:130px}
+.tbl.sim td.sb div{display:inline-block;width:70px;height:7px;border-radius:4px;background:var(--line);vertical-align:middle;margin-right:8px;overflow:hidden}
+.tbl.sim td.sb i{display:block;height:100%;border-radius:4px}
+.tbl.sim td.top6 i{background:linear-gradient(90deg,#2fd08a,#7cf0b8)}
+.tbl.sim td.top10 i{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.tbl.sim td.last i{background:linear-gradient(90deg,#ff5a4e,#ff9a8e)}
+.tbl.sim td.sb span{display:inline-block;min-width:40px;text-align:right}
+@media (max-width:760px){
+  .modal{padding:0;align-items:flex-end}
+  .mbox{border-radius:22px 22px 0 0;max-height:92vh;padding:20px 16px calc(20px + env(safe-area-inset-bottom));transform:translateY(40px)}
+  .mc-team img{width:56px;height:56px}.mc-team b{font-size:17px}
+  .mc-score{font-size:44px}.mc-score.t{font-size:36px}
+  .mc-h2h{grid-template-columns:62px 1fr auto 1fr;font-size:11.5px;padding:8px}
+  .mx-head img{width:48px;height:48px}.mx-head h3{font-size:22px}
+  .tbl.sim{min-width:720px}
+}
 /* FEED */
 .feed-day{margin-top:32px}
 .feed-day h3{font:700 20px "Barlow Condensed",sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:12px;margin-bottom:14px}
@@ -588,7 +680,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--dim);fon
 </head>
 <body>
 <header class="wrap hero">
-  <div class="eyebrow">SHL 2026/27 · YouTube</div>
+  <div class="topline"><div class="eyebrow">SHL 2026/27 · YouTube</div><button class="installbtn" id="installbtn" hidden>📲 Installera app</button></div>
   <h1>Klubbarnas <em>videor</em></h1>
   <p class="lead">Highlights, presskonferenser, intervjuer och klipp inifrån omklädningsrummet från alla 14 klubbars officiella kanaler, plus de svenska hockeypoddarna som pratar SHL. Allt på ett ställe, sorterat efter datum.</p>
   <div class="stats" id="stats"></div>
@@ -619,6 +711,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--dim);fon
 </div>
 
 <main class="wrap" id="out"></main>
+<div class="modal" id="modal" hidden><div class="mbox" role="dialog" aria-modal="true"><button class="mclose" aria-label="Stäng">✕</button><div id="mbody"></div></div></div>
 <footer class="wrap">Hämtat från klubbarnas officiella YouTube-kanaler och sju hockeypoddars kanaler 22 november 2026 (cirka 30 senaste videorna per kanal). Datum är ungefärliga och räknade från YouTubes ”för X sedan”. Klicka på ett kort för att öppna videon på YouTube.</footer>
 
 <script>
@@ -639,7 +732,7 @@ const fDay=new Intl.DateTimeFormat('sv-SE',{timeZone:TZ,year:'numeric',month:'2-
 const fTime=new Intl.DateTimeFormat('sv-SE',{timeZone:TZ,hour:'2-digit',minute:'2-digit'});
 const fLong=new Intl.DateTimeFormat('sv-SE',{timeZone:TZ,weekday:'long',day:'numeric',month:'long'});
 const byName=n=>D.find(c=>c.club===n);
-const GAMES=G.map(g=>{const t=new Date(g[0]);return {t,day:fDay.format(t),time:fTime.format(t),h:byName(CODE[g[1]]),a:byName(CODE[g[2]]),state:g[3],played:g[3]==='post-game',hs:+g[4],as:+g[5],ot:!!g[6],so:!!g[7],venue:g[8]};}).sort((x,y)=>x.t-y.t);
+const GAMES=G.map((g,i)=>{const t=new Date(g[0]);return {id:i,t,day:fDay.format(t),time:fTime.format(t),h:byName(CODE[g[1]]),a:byName(CODE[g[2]]),state:g[3],played:g[3]==='post-game',hs:+g[4],as:+g[5],ot:!!g[6],so:!!g[7],venue:g[8]};}).sort((x,y)=>x.t-y.t);
 const BYDAY={}; GAMES.forEach(g=>(BYDAY[g.day]=BYDAY[g.day]||[]).push(g));
 const MONTHS=[[2026,8],[2026,9],[2026,10],[2026,11],[2027,0],[2027,1],[2027,2]];
 const MNAME=['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
@@ -663,7 +756,7 @@ function standings(withLive){
 function resFor(g,c){ if(!g.played) return null; const mine=g.h===c?g.hs:g.as, oth=g.h===c?g.as:g.hs; const ext=g.ot||g.so; return {cls:mine>oth?'w':(ext?'o':'l'),txt:(mine>oth?'V ':'F ')+mine+'–'+oth+(g.so?' S':g.ot?' Ö':'')}; }
 function gameRow(g,team){
   const res=g.played?'<b>'+g.hs+'–'+g.as+'</b><small>'+(g.so?'efter straffar':g.ot?'efter förlängning':'slut')+'</small>':'<b>'+g.time+'</b><small>nedsläpp</small>';
-  return '<div class="game'+(team&&(g.h===team||g.a===team)?' hl':'')+'"><div class="tm"><img src="'+g.h.logo+'" alt=""><span>'+esc(g.h.short)+'</span></div><div class="mid">'+res+'</div><div class="tm away"><img src="'+g.a.logo+'" alt=""><span>'+esc(g.a.short)+'</span></div><div class="ven">'+esc(g.venue)+'</div></div>';
+  return '<div class="game'+(team&&(g.h===team||g.a===team)?' hl':'')+'" data-g="'+g.id+'"><div class="tm"><img src="'+g.h.logo+'" alt=""><span>'+esc(g.h.short)+'</span></div><div class="mid">'+res+'</div><div class="tm away"><img src="'+g.a.logo+'" alt=""><span>'+esc(g.a.short)+'</span></div><div class="ven">'+esc(g.venue)+'</div></div>';
 }
 function renderCal(){
   if(st.calM===undefined) st.calM=initCalM();
@@ -684,7 +777,7 @@ function renderCal(){
     const row=tbl.find(r=>r.c===team), pos=tbl.indexOf(row)+1, all=GAMES.filter(g=>g.h===team||g.a===team), left=all.filter(g=>!g.played).length;
     const form=row.form.slice(-5);
     h+='<div class="cal-hero team"><img class="big" src="'+team.logo+'" alt=""><div class="hx"><div class="eyebrow">Spelschema 2026/27</div><h2>'+esc(team.club)+'</h2><div class="form">'+form.map(f=>'<span class="f '+(f==='V'?'w':f==='Ö'?'o':'l')+'">'+f+'</span>').join('')+'<em>senaste '+form.length+'</em></div></div>'+
-      '<div class="kpis"><div class="kpi"><b>'+pos+'<small>:a</small></b><span>Placering</span></div><div class="kpi"><b>'+row.p+'</b><span>Poäng</span></div><div class="kpi"><b>'+(row.w+row.otw)+'–'+(row.l+row.otl)+'</b><span>V–F</span></div><div class="kpi"><b>'+left+'</b><span>Kvar</span></div></div></div>';
+      '<div class="kpis"><button class="kpi kbtn" data-cal="'+slug(team.club)+'"><b>📅</b><span>Till kalendern</span></button><div class="kpi"><b>'+pos+'<small>:a</small></b><span>Placering</span></div><div class="kpi"><b>'+row.p+'</b><span>Poäng</span></div><div class="kpi"><b>'+(row.w+row.otw)+'–'+(row.l+row.otl)+'</b><span>V–F</span></div><div class="kpi"><b>'+left+'</b><span>Kvar</span></div></div></div>';
     if(nextG){
       const home=nextG.h===team, opp=home?nextG.a:nextG.h;
       h+='<div class="nextbox"><div class="nb-main"><div class="lbl">Nästa match · '+(home?'Hemma':'Borta')+'</div><div class="duel"><div class="side-t"><img src="'+nextG.h.logo+'" alt=""><b>'+esc(nextG.h.short)+'</b></div><div class="vsx"><b>'+nextG.time+'</b><span>'+fLong.format(nextG.t)+'</span></div><div class="side-t"><img src="'+nextG.a.logo+'" alt=""><b>'+esc(nextG.a.short)+'</b></div></div><div class="arena">📍 '+esc(nextG.venue)+'</div>'+cd(nextG.t)+'</div>'+
@@ -693,11 +786,11 @@ function renderCal(){
   } else {
     const days=Object.keys(BYDAY).length;
     h+='<div class="cal-hero"><img class="big" src="'+L.logo+'" alt=""><div class="hx"><div class="eyebrow">Grundserien 2026/27</div><h2>SHL-<em>kalendern</em></h2><p>Alla '+GAMES.length+' matcher i grundserien. Välj ett lag i raden ovan så visas lagets logga på dess matchdagar.</p></div>'+
-      '<div class="kpis"><div class="kpi"><b>'+days+'</b><span>Matchdagar</span></div><div class="kpi"><b>'+GAMES.filter(g=>g.played).length+'</b><span>Spelade</span></div><div class="kpi"><b>'+GAMES.filter(g=>!g.played).length+'</b><span>Kvar</span></div></div></div>';
+      '<div class="kpis"><button class="kpi kbtn" data-cal=""><b>📅</b><span>Till kalendern</span></button><div class="kpi"><b>'+days+'</b><span>Matchdagar</span></div><div class="kpi"><b>'+GAMES.filter(g=>g.played).length+'</b><span>Spelade</span></div><div class="kpi"><b>'+GAMES.filter(g=>!g.played).length+'</b><span>Kvar</span></div></div></div>';
     if(nextG){
       const dayGames=BYDAY[nextG.day];
       h+='<div class="nextday"><div class="nd-head"><div><div class="lbl">Nästa matchdag</div><h3>'+fLong.format(nextG.t)+'</h3><span class="sub">'+dayGames.length+' matcher · första nedsläpp '+dayGames[0].time+'</span></div>'+cd(dayGames[0].t)+'</div>'+
-        '<div class="nd-grid">'+dayGames.map(g=>'<button class="nd-game" data-day="'+g.day+'"><div class="tt"><img src="'+g.h.logo+'" alt=""><b>'+esc(g.h.short)+'</b></div><div class="mid"><b>'+g.time+'</b><span>vs</span></div><div class="tt"><img src="'+g.a.logo+'" alt=""><b>'+esc(g.a.short)+'</b></div><div class="ven">📍 '+esc(g.venue)+'</div></button>').join('')+'</div></div>';
+        '<div class="nd-grid">'+dayGames.map(g=>'<button class="nd-game" data-g="'+g.id+'"><div class="tt"><img src="'+g.h.logo+'" alt=""><b>'+esc(g.h.short)+'</b></div><div class="mid"><b>'+g.time+'</b><span>vs</span></div><div class="tt"><img src="'+g.a.logo+'" alt=""><b>'+esc(g.a.short)+'</b></div><div class="ven">📍 '+esc(g.venue)+'</div></button>').join('')+'</div></div>';
     }
   }
   /* ---- MONTH GRID ---- */
@@ -755,7 +848,7 @@ async function pollLive(){
       g.period=x.period||x.liveInfo?.period||''; g.clock=x.liveInfo?.gameTime||x.gameTime||'';
     });
     GAMES.sort((a,b)=>a.t-b.t); for(const k in BYDAY) delete BYDAY[k]; GAMES.forEach(g=>(BYDAY[g.day]=BYDAY[g.day]||[]).push(g));
-    liveStamp=new Date(); liveErr=false; liveOn=true;
+    liveStamp=new Date(); liveErr=false; liveOn=true; simCache=null;
   }catch(e){ liveErr=true; if(!liveOn) return; }
   drawMyTeam();
   if(st.mode==='live'||st.mode==='cal') render();
@@ -775,7 +868,7 @@ function liveCard(g){
   const badge={done:'<span class="lb b-done">Slut'+(g.so?' · straffar':g.ot?' · förl.':'')+'</span>',live:'<span class="lb b-live"><i></i>Live'+(g.period?' · P'+g.period:'')+(g.clock?' · '+esc(g.clock):'')+'</span>',now:'<span class="lb b-live"><i></i>Pågår</span>',missing:'<span class="lb b-miss">Resultat ej hämtat</span>',up:'<span class="lb b-up">'+fShort.format(g.t)+' · '+g.time+'</span>'}[s];
   const showScore=s==='done'||s==='live';
   const hw=g.played&&g.hs>g.as, aw=g.played&&g.as>g.hs;
-  return '<div class="lc s-'+s+'">'+badge+'<div class="lc-row"><div class="lt'+(hw?' win':'')+(aw?' lose':'')+'"><img src="'+g.h.logo+'" alt=""><b>'+esc(g.h.short)+'</b></div>'+
+  return '<div class="lc s-'+s+'" data-g="'+g.id+'">'+badge+'<div class="lc-row"><div class="lt'+(hw?' win':'')+(aw?' lose':'')+'"><img src="'+g.h.logo+'" alt=""><b>'+esc(g.h.short)+'</b></div>'+
     '<div class="sc">'+(showScore?'<b>'+g.hs+'</b><em>–</em><b>'+g.as+'</b>':'<span class="vs">'+g.time+'</span>')+'</div>'+
     '<div class="lt'+(aw?' win':'')+(hw?' lose':'')+'"><img src="'+g.a.logo+'" alt=""><b>'+esc(g.a.short)+'</b></div></div>'+
     '<div class="lc-foot"><span>📍 '+esc(g.venue)+'</span>'+((s==='now'||s==='live'||s==='up'||s==='missing')?'<a href="https://www.shl.se/game-schedule" target="_blank" rel="noopener">Följ live på SHL.se ↗</a>':'')+'</div></div>';
@@ -802,6 +895,7 @@ function renderLive(){
   if(nextDay){const ng=pool.filter(g=>g.day===nextDay); h+='<section class="lsec"><div class="lsec-h"><h3>Nästa matchdag</h3><span>'+fLong.format(ng[0].t)+'</span></div><div class="lgrid">'+ng.map(liveCard).join('')+'</div></section>';}
   if(lastDay){const lg=pool.filter(g=>g.day===lastDay); h+='<section class="lsec"><div class="lsec-h"><h3>Senaste resultat</h3><span>'+fLong.format(lg[0].t)+'</span></div><div class="lgrid">'+lg.map(liveCard).join('')+'</div></section>';}
   h+='<section class="lsec"><div class="lsec-h"><h3>Tabell</h3><span>'+(GAMES.some(isLiveG)?'live · ställningen räknas som om matcherna slutade nu':(liveOn?'uppdateras live · ':'')+'efter '+GAMES.filter(g=>g.played).length+' matcher')+'</span></div><div class="cal-card tblwrap">'+bigTable(team)+'<div class="hint">V = vinst · ÖV/ÖF = vinst/förlust efter förlängning eller straffar · 1–6 kvartsfinal · 7–10 åttondelsfinal · 14 kval</div></div></section>';
+  h+=renderSim(team);
   return h;
 }
 document.getElementById('out').addEventListener('click',e=>{ if(st.mode!=='pods') return; const b=e.target.closest('.pp'); if(!b) return; st.pod=b.dataset.pod; try{localStorage.setItem('shl-pod',st.pod);}catch(_){} render(); const s=document.querySelector('.pod-intro'); if(s) window.scrollTo({top:s.getBoundingClientRect().top+scrollY-(innerWidth<=760?70:130),behavior:'smooth'}); });
@@ -1006,6 +1100,94 @@ async function loadVideos(){
   drawMyTeam(); drawLatest(); render();
 }
 
+
+/* ---------- MODAL ---------- */
+const modal=document.getElementById('modal'), mbody=document.getElementById('mbody');
+function openModal(html){ mbody.innerHTML=html; modal.hidden=false; document.body.classList.add('noscroll'); requestAnimationFrame(()=>modal.classList.add('show')); }
+function closeModal(){ modal.classList.remove('show'); document.body.classList.remove('noscroll'); setTimeout(()=>{modal.hidden=true; mbody.innerHTML='';},200); }
+modal.addEventListener('click',e=>{ if(e.target===modal||e.target.closest('.mclose')) closeModal(); });
+addEventListener('keydown',e=>{ if(e.key==='Escape'&&!modal.hidden) closeModal(); });
+
+/* ---------- SITE / KALENDER-EXPORT ---------- */
+const SITE = /workers\.dev$|pages\.dev$|localhost/.test(location.hostname) ? location.origin : 'https://shl.theruup.workers.dev';
+function calExport(team){
+  const code=team?LIVE_CODES[team.club]:'alla';
+  const https=SITE+'/kalender/'+code+'.ics', webcal=https.replace(/^https?:/,'webcal:');
+  const gcal='https://calendar.google.com/calendar/r?cid='+encodeURIComponent(webcal);
+  openModal('<div class="mx-head">'+(team?'<img src="'+team.logo+'" alt="">':'<img src="'+L.logo+'" alt="">')+'<div><div class="eyebrow">Kalender</div><h3>'+(team?esc(team.club):'Alla SHL-matcher')+' i din kalender</h3><p>Alla matcher i grundserien med tid, arena och påminnelse en timme innan. Prenumererar du uppdateras kalendern av sig själv när matcher flyttas eller spelas, och resultaten läggs in.</p></div></div>'+
+    '<div class="mx-opts"><a class="mx-opt" href="'+webcal+'"><b>📱 iPhone, iPad och Mac</b><span>Öppnar Kalender-appen och prenumererar</span></a>'+
+    '<a class="mx-opt" href="'+gcal+'" target="_blank" rel="noopener"><b>🗓️ Google Kalender (Android)</b><span>Lägger till som prenumeration i ditt Google-konto</span></a>'+
+    '<a class="mx-opt" href="'+https+'?dl=1"><b>⬇️ Ladda ner .ics-fil</b><span>Engångsimport till valfri kalender (uppdateras inte)</span></a>'+
+    '<button class="mx-opt" data-copy="'+https+'"><b>🔗 Kopiera länk</b><span>'+esc(https)+'</span></button></div>');
+}
+document.addEventListener('click',e=>{ const c=e.target.closest('[data-copy]'); if(c){ navigator.clipboard&&navigator.clipboard.writeText(c.dataset.copy).then(()=>{c.querySelector('b').textContent='✓ Kopierad';}).catch(()=>{}); } const x=e.target.closest('[data-cal]'); if(x){ calExport(D.find(d=>slug(d.club)===x.dataset.cal)||null); } const m=e.target.closest('[data-g]'); if(m&&!e.target.closest('a')){ const g=GAMES.find(z=>z.id===+m.dataset.g); if(g) matchCenter(g); } });
+
+/* ---------- MATCHCENTER ---------- */
+const TV='TV4 Play · Telia Play';
+function teamLine(c,tbl){ const r=tbl.find(x=>x.c===c), pos=tbl.indexOf(r)+1; return '<div class="mc-tl"><img src="'+c.logo+'" alt=""><div><b>'+esc(c.club)+'</b><span>'+pos+':a · '+r.p+' p · '+r.gp+' m · '+(r.gf-r.ga>0?'+':'')+(r.gf-r.ga)+'</span></div><div class="form">'+r.form.slice(-5).map(f=>'<i class="f '+(f==='V'?'w':f==='Ö'?'o':'l')+'">'+f+'</i>').join('')+'</div></div>'; }
+function matchCenter(g){
+  const tbl=standings(true), s=gStatus(g), live=isLiveG(g);
+  const h2h=GAMES.filter(x=>(x.h===g.h&&x.a===g.a)||(x.h===g.a&&x.a===g.h));
+  const hw=h2h.filter(x=>x.played&&((x.h===g.h&&x.hs>x.as)||(x.a===g.h&&x.as>x.hs))).length, aw=h2h.filter(x=>x.played).length-hw;
+  const score=(g.played||live)?'<b class="mc-score">'+g.hs+'<em>–</em>'+g.as+'</b><span class="mc-st'+(live?' live':'')+'">'+(live?'<i class="dot"></i>Live'+(g.period?' · P'+g.period:''):'Slut'+(g.so?' efter straffar':g.ot?' efter förlängning':''))+'</span>':'<b class="mc-score t">'+g.time+'</b><span class="mc-st">'+fLong.format(g.t)+'</span>';
+  let html='<div class="mc-hero"><div class="mc-team"><img src="'+g.h.logo+'" alt=""><b>'+esc(g.h.short)+'</b><span>Hemma</span></div><div class="mc-mid">'+score+'</div><div class="mc-team"><img src="'+g.a.logo+'" alt=""><b>'+esc(g.a.short)+'</b><span>Borta</span></div></div>'+
+    '<div class="mc-meta"><span>📍 '+esc(g.venue)+'</span><span>📺 '+TV+'</span><span>🗓️ '+fShort.format(g.t)+' · '+g.time+'</span></div>';
+  html+='<div class="mc-sec" id="mc-events">'+(g.played||live?'<h4>Händelser</h4><div class="hint">Hämtar matchhändelser…</div>':'')+'</div>';
+  html+='<div class="mc-sec"><h4>Inbördes möten 2026/27</h4><div class="mc-h2h-sum"><span><b>'+hw+'</b> '+esc(g.h.short)+'</span><span class="sep">vinster</span><span><b>'+aw+'</b> '+esc(g.a.short)+'</span></div>'+
+    h2h.map(x=>'<div class="mc-h2h'+(x===g?' cur':'')+'"><span class="d">'+fShort.format(x.t)+'</span><span class="tt"><img src="'+x.h.logo+'" alt="">'+esc(x.h.short)+'</span><b>'+(x.played?x.hs+'–'+x.as+(x.so?' S':x.ot?' Ö':''):x.time)+'</b><span class="tt r">'+esc(x.a.short)+'<img src="'+x.a.logo+'" alt=""></span></div>').join('')+'</div>';
+  html+='<div class="mc-sec"><h4>Lagen i tabellen</h4>'+teamLine(g.h,tbl)+teamLine(g.a,tbl)+'</div>';
+  html+='<div class="mc-actions"><a class="mx-btn" href="https://www.shl.se/game-schedule" target="_blank" rel="noopener">Följ på SHL.se ↗</a><button class="mx-btn ghost" data-cal="'+slug(g.h.club)+'">📅 '+esc(g.h.short)+'s matcher i kalendern</button></div>';
+  openModal(html);
+  if((g.played||live)&&typeof loadEvents==='function') loadEvents(g);
+}
+
+/* ---------- SLUTSPELSRÄKNARE ---------- */
+let simCache=null;
+function simulate(N){
+  N=N||4000;
+  const base=standings(false), teams=base.map(r=>r.c), idx=new Map(teams.map((c,i)=>[c,i]));
+  const rating=base.map(r=>r.gp?(((r.gf-r.ga)/r.gp)*0.22+(r.p/r.gp-1.5)*0.45)*0.6*Math.min(1,r.gp/30):0);
+  const rem=GAMES.filter(g=>!g.played);
+  const top6=new Array(14).fill(0), top10=new Array(14).fill(0), last=new Array(14).fill(0), first=new Array(14).fill(0), ptsSum=new Array(14).fill(0);
+  for(let n=0;n<N;n++){
+    const P=base.map(r=>r.p), GD=base.map(r=>r.gf-r.ga);
+    const R=rating.map(x=>x+(Math.random()+Math.random()+Math.random()-1.5)*0.35);
+    for(const g of rem){
+      const hi=idx.get(g.h), ai=idx.get(g.a);
+      const d=R[hi]-R[ai]+0.12, ph=1/(1+Math.exp(-1.1*d));
+      const ot=Math.random()<0.23, hwin=Math.random()<ph;
+      const W=hwin?hi:ai, Lo=hwin?ai:hi;
+      if(ot){P[W]+=2;P[Lo]+=1;GD[W]+=1;GD[Lo]-=1;} else {P[W]+=3; const m=1+Math.floor(Math.random()*3); GD[W]+=m; GD[Lo]-=m;}
+    }
+    const order=teams.map((c,i)=>i).sort((a,b)=>P[b]-P[a]||GD[b]-GD[a]||Math.random()-0.5);
+    order.forEach((ti,pos)=>{ if(pos<6) top6[ti]++; if(pos<10) top10[ti]++; if(pos===13) last[ti]++; if(pos===0) first[ti]++; ptsSum[ti]+=P[ti]; });
+  }
+  simCache={at:Date.now(),rows:teams.map((c,i)=>({c,top6:top6[i]/N,top10:top10[i]/N,last:last[i]/N,first:first[i]/N,pts:Math.round(ptsSum[i]/N),now:base[i].p})).sort((a,b)=>b.pts-a.pts)};
+  return simCache;
+}
+function getSim(){ return (simCache&&Date.now()-simCache.at<5*60e3)?simCache:simulate(); }
+const pct=x=>x>=0.995?'>99 %':x<0.005?(x>0?'<1 %':'–'):Math.round(x*100)+' %';
+function renderSim(team){
+  const s=getSim(), left=GAMES.filter(g=>!g.played).length;
+  return '<section class="lsec" id="slutspel"><div class="lsec-h"><h3>Slutspelsräknaren</h3><span>'+left+' matcher kvar · 4 000 simuleringar av resten av grundserien</span></div><div class="cal-card tblwrap"><table class="tbl big sim"><tr><th>#</th><th>Lag</th><th>Nu</th><th>Prognos</th><th>Seger</th><th>Kvartsfinal (1–6)</th><th>Slutspel (1–10)</th><th>Kval (14)</th></tr>'+
+    s.rows.map((r,i)=>'<tr class="'+(team===r.c?'me ':'')+'" data-c="'+slug(r.c.club)+'"><td>'+(i+1)+'</td><td class="t"><img src="'+r.c.logo+'" alt="">'+esc(r.c.club)+'</td><td>'+r.now+'</td><td class="p">'+r.pts+'</td><td>'+pct(r.first)+'</td>'+
+      ['top6','top10','last'].map(k=>'<td class="sb '+k+'"><div><i style="width:'+Math.round(r[k]*100)+'%"></i></div><span>'+pct(r[k])+'</span></td>').join('')+'</tr>').join('')+
+    '</table><div class="hint">Prognosen bygger på lagens poäng och målskillnad per match hittills, plus en liten hemmafördel. Den räknas om varje gång resultaten uppdateras. Det är en uppskattning, inte en garanti.</div></div></section>';
+}
+
+/* ---------- INSTALLERA SOM APP ---------- */
+let deferredPrompt=null;
+const isStandalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+const ib=document.getElementById('installbtn');
+addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredPrompt=e; if(!isStandalone) ib.hidden=false; });
+if(isIOS&&!isStandalone&&SITE===location.origin) ib.hidden=false;
+ib.addEventListener('click',async()=>{
+  if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; ib.hidden=true; return; }
+  openModal('<div class="mx-head"><img src="/icons/icon-192.png" alt="" style="border-radius:16px"><div><div class="eyebrow">Installera</div><h3>Lägg SHL på hemskärmen</h3><p>'+(isIOS?'Tryck på <b>Dela</b>-knappen (fyrkanten med pilen) längst ner i Safari och välj <b>Lägg till på hemskärmen</b>.':'Öppna webbläsarens meny (⋮) och välj <b>Installera app</b> eller <b>Lägg till på startskärmen</b>.')+'</p></div></div>');
+});
+if('serviceWorker' in navigator && SITE===location.origin){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
+
 /* ---------- MITT LAG ---------- */
 let myTeam=''; try{ myTeam=localStorage.getItem('shl-myteam')||''; }catch(e){}
 let pickOpen=false;
@@ -1026,13 +1208,13 @@ function drawMyTeam(){
   let nm='';
   if(nextG){ const home=nextG.h===team, opp=home?nextG.a:nextG.h, live=liveG===nextG;
     const ms=Math.max(0,nextG.t-now), dd=Math.floor(ms/864e5), hh=Math.floor(ms%864e5/36e5), mm=Math.floor(ms%36e5/6e4);
-    nm='<div class="mt-next'+(live?' live':'')+'"><div class="lbl">'+(live?'<span class="dot"></span>Pågår nu':'Nästa match · '+(home?'Hemma':'Borta'))+'</div><div class="mt-duel"><img src="'+nextG.h.logo+'" alt=""><div class="mid">'+(live?'<b class="sc">'+nextG.hs+'–'+nextG.as+'</b>':'<b>'+nextG.time+'</b>')+'<span>'+(live?esc(nextG.venue):fShort.format(nextG.t))+'</span></div><img src="'+nextG.a.logo+'" alt=""></div><div class="mt-vs">'+esc(nextG.h.short)+' – '+esc(nextG.a.short)+'</div>'+
+    nm='<div class="mt-next'+(live?' live':'')+'" data-g="'+nextG.id+'"><div class="lbl">'+(live?'<span class="dot"></span>Pågår nu':'Nästa match · '+(home?'Hemma':'Borta'))+'</div><div class="mt-duel"><img src="'+nextG.h.logo+'" alt=""><div class="mid">'+(live?'<b class="sc">'+nextG.hs+'–'+nextG.as+'</b>':'<b>'+nextG.time+'</b>')+'<span>'+(live?esc(nextG.venue):fShort.format(nextG.t))+'</span></div><img src="'+nextG.a.logo+'" alt=""></div><div class="mt-vs">'+esc(nextG.h.short)+' – '+esc(nextG.a.short)+'</div>'+
       (live?'':'<div class="cd mini" data-t="'+(+nextG.t)+'"><div><b>'+dd+'</b><span>d</span></div><div><b>'+pad(hh)+'</b><span>tim</span></div><div><b>'+pad(mm)+'</b><span>min</span></div></div>')+'</div>';
   }
   const lr=lastG?resFor(lastG,team):null, lopp=lastG?(lastG.h===team?lastG.a:lastG.h):null;
   el.innerHTML='<div class="mt-card"><div class="mt-head"><img class="mt-logo" src="'+team.logo+'" alt=""><div class="mt-id"><div class="eyebrow">Mitt lag</div><h2>'+esc(team.club)+'</h2>'+
-    '<div class="mt-stats"><span><b>'+pos+'</b> plats</span><span><b>'+row.p+'</b> poäng</span><span class="form">'+row.form.slice(-5).map(f=>'<i class="f '+(f==='V'?'w':f==='Ö'?'o':'l')+'">'+f+'</i>').join('')+'</span></div></div>'+
-    '<div class="mt-act"><button class="mt-all" data-go="'+slug(team.club)+'">Allt om '+esc(team.short)+' →</button><button class="mt-change">'+(pickOpen?'Stäng':'Byt lag')+'</button></div></div>'+
+    '<div class="mt-stats"><span><b>'+pos+'</b> plats</span><span><b>'+row.p+'</b> poäng</span>'+(()=>{const sr=getSim().rows.find(x=>x.c===team);return sr?'<span title="Slutspelsräknaren"><b>'+pct(sr.top6)+'</b> kvartsfinal</span>':'';})()+'<span class="form">'+row.form.slice(-5).map(f=>'<i class="f '+(f==='V'?'w':f==='Ö'?'o':'l')+'">'+f+'</i>').join('')+'</span></div></div>'+
+    '<div class="mt-act"><button class="mt-all" data-go="'+slug(team.club)+'">Allt om '+esc(team.short)+' →</button><button class="mt-change" data-cal="'+slug(team.club)+'">📅 Kalender</button><button class="mt-change">'+(pickOpen?'Stäng':'Byt lag')+'</button></div></div>'+
     (pickOpen?picker:'')+
     '<div class="mt-body">'+nm+
       (lastG?'<div class="mt-last"><div class="lbl">Senaste match</div><div class="mt-res"><img src="'+lopp.logo+'" alt=""><div><b class="r '+lr.cls+'">'+lr.txt+'</b><span>mot '+esc(lopp.short)+' · '+fShort.format(lastG.t)+'</span></div></div></div>':'')+
@@ -1051,6 +1233,7 @@ addEventListener('hashchange',()=>{ if(fromHash()) render(); });
 (function(){const mq=matchMedia('(max-width:760px)'),mode=document.getElementById('mode'),types=document.getElementById('types');
   const place=()=>{ if(mq.matches){ if(mode.parentElement!==document.body) document.body.appendChild(mode); } else if(mode.nextElementSibling!==types){ types.parentElement.insertBefore(mode,types); } };
   place(); (mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));})();
+(()=>{const tb=new URLSearchParams(location.search).get('tab'); if(['club','feed','pods','cal','live'].includes(tb)) st.mode=tb;})();
 fromHash(); drawMyTeam(); drawLatest(); render(); loadVideos();
 </script>
 </body>

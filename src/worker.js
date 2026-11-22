@@ -58,6 +58,48 @@ async function fetchFeeds() {
   return { out, status };
 }
 
+
+// ---------- Kalender (.ics) ----------
+async function getSchedule(ctx, origin) {
+  const cache = caches.default;
+  const key = new Request(origin + '/api/schedule');
+  let res = await cache.match(key);
+  if (!res) {
+    const r = await fetch(SHL_URL, { headers: HEADERS });
+    const text = await r.text();
+    if (!r.ok || !text.trim().startsWith('{')) throw new Error('SHL ' + r.status);
+    res = new Response(text, { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=20' } });
+    ctx.waitUntil(cache.put(key, res.clone()));
+  }
+  return (await res.json()).gameInfo || [];
+}
+const icsEsc = s => String(s || '').replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+const icsDate = d => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+const teamName = t => (t.names && (t.names.long || t.names.short)) || t.code;
+function fold(line) { const out = []; while (line.length > 74) { out.push(line.slice(0, 74)); line = ' ' + line.slice(74); } out.push(line); return out.join('\r\n'); }
+function buildIcs(games, team) {
+  const list = team ? games.filter(g => g.homeTeamInfo.code === team || g.awayTeamInfo.code === team) : games;
+  const tname = team && list[0] ? teamName(list[0].homeTeamInfo.code === team ? list[0].homeTeamInfo : list[0].awayTeamInfo) : 'Alla lag';
+  const now = icsDate(new Date());
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//SHL-samlingen//SV', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+    'X-WR-CALNAME:' + icsEsc('SHL 2026/27 – ' + tname), 'X-WR-TIMEZONE:Europe/Stockholm', 'REFRESH-INTERVAL;VALUE=DURATION:PT3H', 'X-PUBLISHED-TTL:PT3H'];
+  for (const g of list) {
+    const start = new Date(g.rawStartDateTime), end = new Date(start.getTime() + 150 * 60000);
+    const h = teamName(g.homeTeamInfo), a = teamName(g.awayTeamInfo);
+    const played = g.state === 'post-game';
+    const score = played ? ' ' + g.homeTeamInfo.score + '–' + g.awayTeamInfo.score + (g.shootout ? ' (str)' : g.overtime ? ' (förl)' : '') : '';
+    const sum = '🏒 ' + h + ' – ' + a + score;
+    const desc = 'SHL omgång ' + (g.roundNumber || '') + '\nSänds på TV4 Play och Telia Play\n' + (played ? 'Slutresultat' + score : 'Nedsläpp ' + start.toLocaleTimeString('sv-SE', { timeZone: 'Europe/Stockholm', hour: '2-digit', minute: '2-digit' }));
+    lines.push('BEGIN:VEVENT', 'UID:' + g.uuid + '@shl-samlingen', 'DTSTAMP:' + now, 'DTSTART:' + icsDate(start), 'DTEND:' + icsDate(end),
+      fold('SUMMARY:' + icsEsc(sum)), fold('LOCATION:' + icsEsc((g.venueInfo && g.venueInfo.name) || '')), fold('DESCRIPTION:' + icsEsc(desc)),
+      'STATUS:CONFIRMED', 'TRANSP:TRANSPARENT');
+    if (!played) lines.push('BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsEsc(h + ' – ' + a + ' börjar om en timme'), 'TRIGGER:-PT60M', 'END:VALARM');
+    lines.push('END:VEVENT');
+  }
+  lines.push('END:VCALENDAR');
+  return lines.join('\r\n') + '\r\n';
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -83,6 +125,22 @@ export default {
         const text = await r.text();
         const max = +(url.searchParams.get('max') || 60000), off = +(url.searchParams.get('off') || 0);
         return new Response(JSON.stringify({ status: r.status, type: r.headers.get('content-type'), length: text.length, off, body: text.slice(off, off + max) }), { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' } });
+      } catch (e) { return json({ error: String(e) }, 502); }
+    }
+
+
+    if (url.pathname === '/api/ics' || url.pathname.startsWith('/kalender/')) {
+      // /kalender/BIF.ics (prenumeration) eller /api/ics?team=BIF[&dl=1]
+      let team = url.searchParams.get('team') || '';
+      const m = url.pathname.match(/^\/kalender\/([A-Za-zÅÄÖåäö0-9]+)\.ics$/);
+      if (m) team = m[1];
+      team = team.toUpperCase(); if (team === 'ALLA') team = '';
+      try {
+        const games = await getSchedule(ctx, url.origin);
+        const body = buildIcs(games, team);
+        const headers = { 'content-type': 'text/calendar; charset=utf-8', 'cache-control': 'public, max-age=900' };
+        if (url.searchParams.get('dl')) headers['content-disposition'] = 'attachment; filename="SHL-' + (team || 'alla') + '.ics"';
+        return new Response(body, { headers });
       } catch (e) { return json({ error: String(e) }, 502); }
     }
 
