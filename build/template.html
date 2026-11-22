@@ -684,6 +684,22 @@ body.noscroll{overflow:hidden}
 .nf-msg{margin-top:12px;font-size:13px;color:var(--gold2)}
 .nf-test{width:100%;margin-top:6px}
 .bell-on{border-color:var(--gold)!important;color:var(--gold2)!important}
+
+/* NYHETER */
+.strip.nws{grid-auto-columns:300px}
+.nwc{scroll-snap-align:start;display:flex;flex-direction:column;border-radius:var(--r);overflow:hidden;background:var(--card);border:1px solid var(--line);transition:.2s}
+.nwc:hover{border-color:#c9d2e3;transform:translateY(-2px)}
+.nw-img{aspect-ratio:16/8;background:#0a0d14;overflow:hidden}.nw-img img{width:100%;height:100%;object-fit:cover;display:block}
+.nw-b{padding:12px 13px 14px}
+.nw-m{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim)}.nw-m b{color:var(--txt);font-weight:700;letter-spacing:.3px;text-transform:uppercase;font-size:10.5px}
+.nw-m .mentions{margin-left:auto;display:flex;gap:3px}.nw-m .mentions img{width:18px;height:18px;border-radius:50%;background:#fff}
+.nw-t{font:700 15px/1.3 Inter;margin-top:7px}
+.nw-d{color:var(--mut);font-size:12.5px;margin-top:6px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.mt-news{padding:16px;border-radius:14px;background:rgba(7,9,13,.5);border:1px solid var(--line2);grid-column:1/-1}
+.mt-news a{display:block;padding:9px 0;border-top:1px solid var(--line)}.mt-news a:first-of-type{border-top:0}
+.mt-news b{display:block;font:600 13.5px/1.35 Inter}.mt-news span{display:block;color:var(--dim);font-size:11.5px;margin-top:3px}
+.mt-news a:hover b{color:var(--gold2)}
+@media (max-width:760px){.strip.nws{grid-auto-columns:80%}}
 /* FEED */
 .feed-day{margin-top:32px}
 .feed-day h3{font:700 20px "Barlow Condensed",sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--mut);display:flex;align-items:center;gap:12px;margin-bottom:14px}
@@ -1030,6 +1046,7 @@ function render(){
       if(!vs.length&&!pv.length&&!lv.length) continue;
       h+='<section class="club" id="'+slug(c.club)+'"><div class="club-head"><img src="'+c.logo+'" alt=""><div><h2>'+esc(c.club)+'</h2><div class="meta"><span>'+esc(c.handle)+'</span><span>'+esc(c.subs)+'</span><span>'+vs.length+' videor</span></div></div>'+
          '<a class="chlink" href="https://www.youtube.com/channel/'+c.id+'/videos" target="_blank" rel="noopener"><svg width="16" height="12" viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#ff0033"/><path d="M11 6v8l7-4z" fill="#fff"/></svg><span>Kanalen</span> ↗</a></div>';
+      if(!st.q&&!st.types.size) h+=newsRow(NEWS.filter(n=>n.clubs.includes(c)).slice(0,12));
       for(const t of TYPES){
         const rv=vs.filter(v=>v.cat===t.k).concat(t.k==='Highlights'?lv:[]).sort(sorter);
         if(!rv.length) continue;
@@ -1061,6 +1078,7 @@ function render(){
     }
     secs.sort((a,b)=>st.asc?a.ts-b.ts:b.ts-a.ts).forEach(x=>h+=x.html);
   } else {
+    if(!st.q&&!st.types.size) h+=newsRow((st.club?NEWS.filter(n=>n.clubs.some(c=>slug(c.club)===st.club)):NEWS).slice(0,20),'Senaste hockeynyheterna');
     const all=clubs.flatMap(c=>c.videos.filter(match).map(v=>({v,c}))).concat(podVids.filter(match).map(v=>({v,c:null}))).sort((a,b)=>sorter(a.v,b.v));
     let cur=null, buf='';
     for(const {v,c} of all){ const k=dayKey(v.ts); if(k!==cur){ if(cur) h+='<div class="feed-day"><h3>'+cur+'</h3><div class="grid">'+buf+'</div></div>'; cur=k; buf=''; } buf+=card(v,c,true); }
@@ -1256,6 +1274,23 @@ document.addEventListener('click',async e=>{
 // håll servern uppdaterad om laget byts medan notiser är på
 function syncNotifTeam(){ if(notif.on&&pushOK()) pushSubscribe().catch(()=>{}); }
 
+
+/* ---------- NYHETER ---------- */
+let NEWS=[];
+async function loadNews(){
+  try{ const j=await fetch('/api/news',{cache:'no-store'}).then(r=>{if(!r.ok) throw 0; return r.json();});
+    NEWS=(j.items||[]).map(n=>Object.assign(n,{clubs:D.filter(c=>ALIAS[c.club]&&ALIAS[c.club].test(n.title+' '+n.desc))}));
+    drawMyTeam(); render(); }catch(e){}
+}
+function newsCard(n){
+  return '<a class="nwc" href="'+esc(n.link)+'" target="_blank" rel="noopener">'+(n.img?'<div class="nw-img"><img loading="lazy" src="'+esc(n.img)+'" alt="" onerror="this.parentNode.remove()"></div>':'')+
+    '<div class="nw-b"><div class="nw-m"><b>'+esc(n.src)+'</b><span>'+when(n.ts)+'</span>'+(n.clubs.length?'<span class="mentions">'+n.clubs.slice(0,3).map(c=>'<img src="'+c.logo+'" alt="">').join('')+'</span>':'')+'</div><div class="nw-t">'+esc(n.title)+'</div>'+(n.desc?'<div class="nw-d">'+esc(n.desc)+'</div>':'')+'</div></a>';
+}
+function newsRow(list,label){
+  if(!list.length) return '';
+  return '<div class="row" style="--c:#c9d2e3"><div class="row-h"><span class="lbl">'+(label||'Nyheter')+'</span><span class="n">'+list.length+'</span><div class="nav"><button data-dir="-1" aria-label="Bakåt">‹</button><button data-dir="1" aria-label="Framåt">›</button></div></div><div class="strip nws">'+list.map(newsCard).join('')+'</div></div>';
+}
+
 /* ---------- MITT LAG ---------- */
 let myTeam=''; try{ myTeam=localStorage.getItem('shl-myteam')||''; }catch(e){}
 let pickOpen=false;
@@ -1287,6 +1322,7 @@ function drawMyTeam(){
     '<div class="mt-body">'+nm+
       (lastG?'<div class="mt-last"><div class="lbl">Senaste match</div><div class="mt-res"><img src="'+lopp.logo+'" alt=""><div><b class="r '+lr.cls+'">'+lr.txt+'</b><span>mot '+esc(lopp.short)+' · '+fShort.format(lastG.t)+'</span></div></div></div>':'')+
       '<div class="mt-vids"><div class="lbl">Senaste klippen</div><div class="mt-strip">'+vids.map(v=>'<a class="mtv" href="https://www.youtube.com/watch?v='+v.v+'" target="_blank" rel="noopener" style="--c:'+TC[v.cat]+'"><div class="th">'+(v.thumb?'<img loading="lazy" src="'+v.thumb+'" alt="" onerror="this.remove()">':'')+'<span class="tag">'+v.cat+'</span></div><div class="t">'+esc(v.title)+'</div><div class="m">'+(v.pod?esc(v.pod.name)+' · ':'')+when(v.ts)+'</div></a>').join('')+'</div></div>'+
+      (()=>{const nl=NEWS.filter(n=>n.clubs.includes(team)).slice(0,4); return nl.length?'<div class="mt-news"><div class="lbl">Senaste nytt</div>'+nl.map(n=>'<a href="'+esc(n.link)+'" target="_blank" rel="noopener"><b>'+esc(n.title)+'</b><span>'+esc(n.src)+' · '+when(n.ts)+'</span></a>').join('')+'</div>':'';})()+
     '</div></div>';
 }
 document.getElementById('myteam').addEventListener('click',e=>{
@@ -1302,7 +1338,7 @@ addEventListener('hashchange',()=>{ if(fromHash()) render(); });
   const place=()=>{ if(mq.matches){ if(mode.parentElement!==document.body) document.body.appendChild(mode); } else if(mode.nextElementSibling!==types){ types.parentElement.insertBefore(mode,types); } };
   place(); (mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));})();
 (()=>{const tb=new URLSearchParams(location.search).get('tab'); if(['club','feed','pods','cal','live'].includes(tb)) st.mode=tb;})();
-fromHash(); drawMyTeam(); drawLatest(); render(); loadVideos();
+fromHash(); drawMyTeam(); drawLatest(); render(); loadVideos(); loadNews();
 </script>
 </body>
 </html>

@@ -102,6 +102,34 @@ function buildIcs(games, team) {
 }
 
 
+
+// ---------- Nyheter (RSS) ----------
+const NEWS_FEEDS = [
+  { src: 'Sportbladet', url: 'https://rss.aftonbladet.se/rss2/small/pages/sections/sportbladet/hockey/' },
+  { src: 'Expressen', url: 'https://feeds.expressen.se/sport/hockey/' },
+  { src: 'SVT Sport', url: 'https://www.svt.se/sport/ishockey/rss.xml' },
+  { src: 'Hockeysverige', url: 'https://hockeysverige.se/feed/' },
+  { src: 'Hockeynews', url: 'https://www.hockeynews.se/feed/' }
+];
+function parseRss(xml, src) {
+  const items = [...xml.matchAll(/<item[\s>]([\s\S]*?)<\/item>/g)].map(m => m[1]);
+  const g = (e, tag) => { const r = e.match(new RegExp('<' + tag + '[^>]*>([\\s\\S]*?)<\\/' + tag + '>')); return r ? r[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() : ''; };
+  return items.map(e => {
+    const img = (e.match(/<(?:media:content|media:thumbnail|enclosure)[^>]+url="([^"]+)"/) || [])[1] || '';
+    return { title: decode(g(e, 'title')), link: decode(g(e, 'link')), ts: Date.parse(g(e, 'pubDate') || g(e, 'dc:date')) || 0, src, img: img.replace(/&amp;/g, '&'),
+      desc: decode(decode(g(e, 'description'))).replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 220) };
+  }).filter(x => x.title && x.link);
+}
+async function fetchNews() {
+  const res = await Promise.allSettled(NEWS_FEEDS.map(f => fetch(f.url, { headers: { 'user-agent': HEADERS['user-agent'], 'accept': 'application/rss+xml, application/xml, text/xml, */*' } })
+    .then(r => r.ok ? r.text() : Promise.reject(r.status)).then(x => parseRss(x, f.src))));
+  const status = {}; let all = [];
+  res.forEach((r, i) => { status[NEWS_FEEDS[i].src] = r.status === 'fulfilled' ? r.value.length : 'fel ' + r.reason; if (r.status === 'fulfilled') all = all.concat(r.value); });
+  const seen = new Set(), weekAgo = Date.now() - 10 * 86400e3;
+  all = all.filter(x => x.ts > weekAgo && !seen.has(x.title.toLowerCase()) && seen.add(x.title.toLowerCase())).sort((a, b) => b.ts - a.ts).slice(0, 200);
+  return { all, status };
+}
+
 // ---------- Notiser ----------
 const SUBJECT = 'https://shl.theruup.workers.dev';
 async function readSubs(kv) { return (await kv.get('subs', 'json')) || {}; }
@@ -244,6 +272,18 @@ export default {
         ctx.waitUntil(cache.put(key, res.clone()));
         return res;
       } catch (e) { return json({ error: String(e) }, 502); }
+    }
+
+
+    if (url.pathname === '/api/news' || url.pathname === '/api/ndebug') {
+      if (url.pathname === '/api/ndebug') { const { status, all } = await fetchNews(); return json({ status, total: all.length, first: all.slice(0, 3) }); }
+      const key = new Request(url.origin + '/api/news');
+      let res = await cache.match(key);
+      if (res) return res;
+      const { all } = await fetchNews();
+      res = json({ fetched: new Date().toISOString(), items: all }, 200, 'public, max-age=900');
+      ctx.waitUntil(cache.put(key, res.clone()));
+      return res;
     }
 
     if (url.pathname === '/api/videos' || url.pathname === '/api/vdebug') {
