@@ -22,7 +22,8 @@ export const CHANNELS = [
   'UC9CHR79injuMuuGpsJfB6Cw','UC7RSaftusTCQ-vYuzi5f5XA','UCUMwsAsbK-SsW5GHufJJFUA',
   'UCEExj5LjDeHlSY5ioiAOJiQ','UCtZC2DyDpb5sXf6ZesOxzpg','UC_PmagXpiQuaGystkQ7cWtA','UCiGv-M054YCT_LJrqxnwC1w',
   'UCjOaUSw9dXwSj1H6ZLnkt4w','UC_cMEZpPZguKdo-xxdubi6w','UC3iZc396g5qL-9mDVQzi2gA','UCpkxdVrV8DRLi-xEFR5XV1w',
-  'UCuPo0m0SiXuhF2YlDAxfrNQ','UCaEDZA0Cv_voLgrl1To5CsA','UCVN7FlwJbC9Om9QJDaf1zmA','UCQmle3K2yCcpy55VNWdp2hA'
+  'UCuPo0m0SiXuhF2YlDAxfrNQ','UCaEDZA0Cv_voLgrl1To5CsA','UCVN7FlwJbC9Om9QJDaf1zmA','UCQmle3K2yCcpy55VNWdp2hA',
+  'UCM_9gWD_v4uT6rTGSUl1jIw'
 ];
 
 const json = (obj, status = 200, cache = 'no-store') =>
@@ -43,6 +44,20 @@ export function parseFeed(xml) {
       short: /\/shorts\//.test(g(/<link rel="alternate" href="([^"]+)"/) || '')
     };
   }).filter(x => x.v && x.published);
+}
+
+// Kanaler utan inbyggd logga: hämta profilbilden från kanalsidan
+export const AVATAR_CHANNELS = ['UCM_9gWD_v4uT6rTGSUl1jIw'];
+async function fetchAvatars() {
+  const out = {};
+  await Promise.allSettled(AVATAR_CHANNELS.map(async id => {
+    const r = await fetch('https://www.youtube.com/channel/' + id, { headers: { 'user-agent': HEADERS['user-agent'], 'accept-language': 'sv-SE,sv;q=0.9' } });
+    if (!r.ok) return;
+    const html = await r.text();
+    const m = html.match(/<meta property="og:image" content="([^"]+)"/) || html.match(/"avatar":\{"thumbnails":\[\{"url":"([^"]+)"/);
+    if (m) out[id] = decode(m[1]).replace(/=s\d+-/, '=s176-');
+  }));
+  return out;
 }
 
 async function fetchFeeds() {
@@ -288,15 +303,15 @@ export default {
 
     if (url.pathname === '/api/videos' || url.pathname === '/api/vdebug') {
       if (url.pathname === '/api/vdebug') {
-        const { status } = await fetchFeeds();
-        return json({ channels: CHANNELS.length, status });
+        const [{ status }, avatars] = await Promise.all([fetchFeeds(), fetchAvatars().catch(e => ({ fel: String(e) }))]);
+        return json({ channels: CHANNELS.length, status, avatars });
       }
       const key = new Request(url.origin + '/api/videos');
       let res = await cache.match(key);
       if (res) return res;
-      const { out } = await fetchFeeds();
+      const [{ out }, avatars] = await Promise.all([fetchFeeds(), fetchAvatars().catch(() => ({}))]);
       if (!Object.keys(out).length) return json({ error: 'inga flöden' }, 502);
-      res = json({ fetched: new Date().toISOString(), channels: out }, 200, 'public, max-age=600');
+      res = json({ fetched: new Date().toISOString(), channels: out, avatars }, 200, 'public, max-age=600');
       ctx.waitUntil(cache.put(key, res.clone()));
       return res;
     }

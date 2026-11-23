@@ -506,6 +506,11 @@ img{max-width:100%}
 
 .pod-intro{display:block}
 .pi-txt h2{margin-top:6px}
+.podkinds{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.pk{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:999px;border:1px solid var(--line2);background:rgba(7,9,13,.45);font-weight:600;font-size:13.5px;color:var(--mut,#aab);transition:.18s;cursor:pointer}
+.pk span{font-size:15px}.pk em{font-style:normal;font-size:11.5px;opacity:.6;font-weight:700}
+.pk:hover{border-color:rgba(214,176,92,.5);color:#fff}
+.pk.on{background:linear-gradient(135deg,rgba(214,176,92,.28),rgba(214,176,92,.08));border-color:rgba(214,176,92,.75);color:#fff;box-shadow:0 4px 18px rgba(214,176,92,.15)}
 .podpicks{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px;margin-top:18px}
 .pp{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 8px 12px;border-radius:14px;border:1px solid var(--line2);background:rgba(7,9,13,.45);text-align:center;transition:.18s}
 .pp img,.pp .all{width:52px;height:52px;border-radius:50%;background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.5);object-fit:cover}
@@ -516,7 +521,7 @@ img{max-width:100%}
 .pp:hover{border-color:var(--pd);transform:translateY(-2px)}
 .pp.on{border-color:var(--pd);background:linear-gradient(160deg,color-mix(in srgb,var(--pd) 22%,var(--card2)),var(--card));box-shadow:0 0 0 1px var(--pd),0 12px 30px rgba(0,0,0,.4)}
 .pp.on small{color:var(--pd)}
-@media (max-width:760px){.podpicks{display:flex;overflow-x:auto;scrollbar-width:none;margin:16px -18px 0;padding:2px 18px 4px;gap:8px}.podpicks::-webkit-scrollbar{display:none}.pp{flex:0 0 104px;padding:12px 6px 10px}.pp img,.pp .all{width:44px;height:44px}.pp b{font-size:12.5px}}
+@media (max-width:760px){.podkinds{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:14px -18px 0;padding:2px 18px}.podkinds::-webkit-scrollbar{display:none}.pk{flex:0 0 auto;padding:8px 13px;font-size:13px}.podpicks{display:flex;overflow-x:auto;scrollbar-width:none;margin:16px -18px 0;padding:2px 18px 4px;gap:8px}.podpicks::-webkit-scrollbar{display:none}.pp{flex:0 0 104px;padding:12px 6px 10px}.pp img,.pp .all{width:44px;height:44px}.pp b{font-size:12.5px}}
 
 /* MITT LAG */
 .myteam{margin-top:6px;margin-bottom:26px}
@@ -755,6 +760,14 @@ const F = __FIMPEN__;
 P.push(F.channel);
 P.unshift(L);
 const FR = {name:'Fimpens Resa', logo:F.channel.logo};
+const PODKINDS=[
+  {k:'snack',name:'Snack & analys',ic:'🎙️',pods:['Hockeytime','DOOZ & NALLE','Pettafnutt','HockeyNews','Hockeymorgon']},
+  {k:'media',name:'TV & tidningar',ic:'📺',pods:['TV4 Hockey','Expressen Sport','Sportbladet','Sportstudion']},
+  {k:'resor',name:'Reportage & resor',ic:'🧳',pods:['Jimmy hjärta Hockey','Fimpens Resa',F.channel.name]},
+  {k:'fantasy',name:'Fantasy',ic:'🏆',pods:['Toppa Laget','FantasySHL-podden']},
+  {k:'liga',name:'Ligan',ic:'🏒',pods:[L.name]}
+];
+const podKindOf=name=>(PODKINDS.find(x=>x.pods.includes(name))||{k:'snack'}).k;
 F.seasons.forEach(s=>s.videos.forEach(v=>{v.pod=FR; v.season=s.name;}));
 
 /* ---------- CALENDAR ---------- */
@@ -931,7 +944,7 @@ function renderLive(){
   h+=renderSim(team);
   return h;
 }
-document.getElementById('out').addEventListener('click',e=>{ if(st.mode!=='pods') return; const b=e.target.closest('.pp'); if(!b) return; st.pod=b.dataset.pod; try{localStorage.setItem('shl-pod',st.pod);}catch(_){} render(); const s=document.querySelector('.pod-intro'); if(s) window.scrollTo({top:s.getBoundingClientRect().top+scrollY-(innerWidth<=760?70:130),behavior:'smooth'}); });
+document.getElementById('out').addEventListener('click',e=>{ if(st.mode!=='pods') return; const k=e.target.closest('.pk'); if(k){ st.podKind=k.dataset.kind; st.pod=''; try{localStorage.setItem('shl-podkind',st.podKind);localStorage.setItem('shl-pod','');}catch(_){} render(); return; } const b=e.target.closest('.pp'); if(!b) return; st.pod=b.dataset.pod; try{localStorage.setItem('shl-pod',st.pod);}catch(_){} render(); const s=document.querySelector('.pod-intro'); if(s) window.scrollTo({top:s.getBoundingClientRect().top+scrollY-(innerWidth<=760?70:130),behavior:'smooth'}); });
 document.getElementById('out').addEventListener('click',e=>{ if(st.mode!=='live') return; const r=e.target.closest('.tbl tr[data-c]'); if(r){st.club=r.dataset.c; location.hash=st.club; render();} });
 
 document.getElementById('out').addEventListener('click',e=>{
@@ -1058,17 +1071,25 @@ function render(){
   } else if(st.mode==='pods'){
     const fAll0=F.seasons.flatMap(s=>s.videos);
     const pickers=[{k:'',name:'Alla',logo:'',ts:Infinity,n:ALLPOD.length}].concat(
-      P.map(p=>({k:slug(p.name),name:p.name,logo:p.logo,ts:Math.max(...p.videos.map(v=>v.ts)),n:p.videos.length,liga:p===L})),
+      P.filter(p=>p.videos.length).map(p=>({k:slug(p.name),name:p.name,logo:p.logo,ts:Math.max(...p.videos.map(v=>v.ts)),n:p.videos.length,liga:p===L})),
       [{k:'fimpens-resa',name:'Fimpens Resa',logo:F.channel.logo,ts:Math.max(...fAll0.map(v=>v.ts)),n:fAll0.length}]
     ).sort((a,b)=>b.ts-a.ts);
-    if(st.pod===undefined){ try{ st.pod=localStorage.getItem('shl-pod')||''; }catch(e){ st.pod=''; } if(!pickers.some(x=>x.k===st.pod)) st.pod=''; }
-    h+='<div class="pod-intro"><div class="pi-txt"><div class="eyebrow">Poddar &amp; media</div><h2>Välj vem du vill se</h2><p>Tryck på en poddare för att bara se den. Valet sparas till nästa gång.</p></div><div class="podpicks">'+
-      pickers.map(x=>'<button class="pp'+(st.pod===x.k?' on':'')+'" data-pod="'+x.k+'">'+(x.logo?'<img src="'+x.logo+'" alt="">':'<span class="all">Alla</span>')+'<b>'+esc(x.name)+'</b><small>'+(x.k?when(x.ts):x.n+' avsnitt')+'</small>'+(x.k&&NOW-x.ts<2*864e5?'<i class="new"></i>':'')+'</button>').join('')+'</div></div>';
+    pickers.forEach(x=>{ x.kind=x.k?podKindOf(x.name):''; });
+    if(st.podKind===undefined){ try{ st.podKind=localStorage.getItem('shl-podkind')||''; }catch(e){ st.podKind=''; } if(!PODKINDS.some(x=>x.k===st.podKind)) st.podKind=''; }
+    if(st.pod===undefined){ try{ st.pod=localStorage.getItem('shl-pod')||''; }catch(e){ st.pod=''; } }
+    const kindCount=k=>pickers.filter(x=>x.k&&x.kind===k).reduce((s,x)=>s+x.n,0);
+    const shown=pickers.filter(x=>!x.k||!st.podKind||x.kind===st.podKind);
+    if(!shown.some(x=>x.k===st.pod)) st.pod='';
+    if(!st.pod&&st.podKind) shown[0].n=kindCount(st.podKind);
+    h+='<div class="pod-intro"><div class="pi-txt"><div class="eyebrow">Poddar &amp; media</div><h2>Välj vem du vill se</h2><p>Välj sorts podd och sedan en poddare. Sökfältet letar klipp bara i det du valt. Valen sparas till nästa gång.</p></div>'+
+      '<div class="podkinds"><button class="pk'+(!st.podKind?' on':'')+'" data-kind=""><span>✨</span>Alla sorter</button>'+PODKINDS.map(x=>{const n=kindCount(x.k); return n?'<button class="pk'+(st.podKind===x.k?' on':'')+'" data-kind="'+x.k+'"><span>'+x.ic+'</span>'+esc(x.name)+'<em>'+n+'</em></button>':'';}).join('')+'</div><div class="podpicks">'+
+      shown.map(x=>'<button class="pp'+(st.pod===x.k?' on':'')+'" data-pod="'+x.k+'">'+(x.logo?'<img src="'+x.logo+'" alt="">':'<span class="all">Alla</span>')+'<b>'+esc(x.name)+'</b><small>'+(x.k?when(x.ts):x.n+' avsnitt')+'</small>'+(x.k&&NOW-x.ts<2*864e5?'<i class="new"></i>':'')+'</button>').join('')+'</div></div>';
     const secs=[];
     const fAll=F.seasons.flatMap(s=>s.videos);
-    if(!st.pod||st.pod==='fimpens-resa') secs.push({ts:Math.max(...fAll.map(v=>v.ts)),html:renderFimpen()});
+    if((!st.pod||st.pod==='fimpens-resa')&&(!st.podKind||podKindOf('Fimpens Resa')===st.podKind)) secs.push({ts:Math.max(...fAll.map(v=>v.ts)),html:renderFimpen()});
     for(const p of P){
       if(st.pod&&slug(p.name)!==st.pod) continue;
+      if(st.podKind&&podKindOf(p.name)!==st.podKind) continue;
       const vs=p.videos.filter(v=>match(v)&&(!st.club||v.clubs.some(c=>slug(c.club)===st.club))).sort(sorter);
       if(!vs.length) continue;
       const latest=Math.max(...p.videos.map(v=>v.ts));
@@ -1115,7 +1136,8 @@ function catOf(t){
 let videosLive=false;
 async function loadVideos(){
   let j; try{ j=await fetch('/api/videos',{cache:'no-store'}).then(r=>{if(!r.ok) throw 0; return r.json();}); }catch(e){ return; }
-  const feeds=j.channels||{}; let added=0;
+  const feeds=j.channels||{}, avatars=j.avatars||{}; let added=0;
+  P.forEach(p=>{ if(avatars[p.id]) p.logo=avatars[p.id]; });
   const srcs=D.map(c=>({o:c,kind:'club'})).concat(P.map(p=>({o:p,kind:p===L?'liga':'pod'})));
   for(const {o,kind} of srcs){
     const feed=feeds[o.id]; if(!feed) continue;
