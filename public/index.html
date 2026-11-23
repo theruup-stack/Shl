@@ -506,15 +506,20 @@ img{max-width:100%}
 
 .pod-intro{display:block}
 .pi-txt h2{margin-top:6px}
-.podbar{display:flex;gap:8px;margin-top:10px;flex:1 1 100%;width:100%;min-width:0;box-sizing:border-box}
-.pb-cur{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:8px 10px 8px 8px;border-radius:16px;border:1px solid color-mix(in srgb,var(--gold) 60%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 20%,var(--card2)),var(--card));box-shadow:0 6px 22px rgba(0,0,0,.35);text-align:left}
-.pb-cur img,.pb-all{width:40px;height:40px;border-radius:50%;background:#fff;object-fit:cover;flex:0 0 auto;box-shadow:0 3px 10px rgba(0,0,0,.4)}
-.pb-all{display:grid;place-items:center;background:linear-gradient(135deg,var(--gold2),var(--gold));font-size:19px}
-.pb-t{display:flex;flex-direction:column;min-width:0}
-.pb-t small{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);font-weight:700}
-.pb-t b{font:800 19px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pb-go{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;background:var(--gold);color:#1a1405;font-weight:800;font-size:13px;white-space:nowrap}
-.pb-x{flex:0 0 52px;border-radius:16px;border:1px solid var(--line2);background:var(--card);color:var(--mut);font-size:16px}
+.podbar{display:flex;align-items:stretch;gap:6px;margin-top:10px;flex:1 1 100%;width:100%;min-width:0;box-sizing:border-box}
+.pi-row{flex:1;min-width:0;display:flex;align-items:flex-start;gap:4px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;padding:2px 2px 4px;-webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}
+.pi-row::-webkit-scrollbar{display:none}
+.pi{flex:0 0 auto;width:74px;display:flex;flex-direction:column;align-items:center;gap:5px;scroll-snap-align:start;padding:2px 0}
+.pi-ic{position:relative;width:54px;height:54px;border-radius:50%;padding:2px;background:var(--line2);transition:.18s}
+.pi-ic img{width:100%;height:100%;border-radius:50%;object-fit:cover;background:#fff;border:2px solid var(--bg)}
+.pi-ic i{position:absolute;top:1px;right:1px;width:12px;height:12px;border-radius:50%;background:var(--gold);border:2px solid var(--bg)}
+.pi-all{display:grid;place-items:center;font-size:22px;background:linear-gradient(135deg,var(--gold2),var(--gold))}
+.pi b{font-size:10.5px;line-height:1.15;font-weight:700;color:var(--mut);text-align:center;max-width:72px;word-break:break-word;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.pi.on .pi-ic{background:linear-gradient(135deg,#ffe08a,var(--gold));box-shadow:0 0 16px color-mix(in srgb,var(--gold) 55%,transparent);transform:scale(1.06)}
+.pi.on b{color:var(--gold)}
+.pi:active .pi-ic{transform:scale(.94)}
+.pi-sep{flex:0 0 auto;align-self:center;margin:0 2px 18px;font-size:13px;opacity:.55;border-left:1px solid var(--line2);padding-left:6px}
+.pi-more{flex:0 0 40px;align-self:center;height:40px;margin-bottom:16px;border-radius:12px;border:1px solid var(--line2);background:var(--card);color:var(--gold);display:grid;place-items:center}
 .podsheet{width:min(760px,100%)}
 .ps-head h3{font:800 30px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;margin-top:6px}
 .ps-allbtn{display:flex;align-items:center;gap:10px;width:100%;margin-top:16px;padding:14px 16px;border-radius:14px;border:1px solid var(--line2);background:var(--card);font-weight:800;font-size:15px;color:var(--txt)}
@@ -533,7 +538,7 @@ img{max-width:100%}
 @media (max-width:760px){
   body.pods #types{display:none}
   body.pods .pod-intro{display:none}
-  .podbar{margin-top:8px;padding-bottom:2px}.pb-x{flex:0 0 44px}.pb-go{padding:8px 11px;font-size:12.5px}.pb-cur{gap:10px}
+  .podbar{margin-top:6px}
   .ps-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .ps-i b{font-size:12.5px}
 }
@@ -816,19 +821,34 @@ const PODKINDS=[
   {k:'liga',name:'Ligan',ic:'🏒',pods:[L.name]}
 ];
 let PODSTATE=null;
+function podList(){
+  const fa=F.seasons.flatMap(s=>s.videos);
+  const xs=P.filter(p=>p.videos.length).map(p=>({k:slug(p.name),name:p.name,logo:p.logo,ts:Math.max(...p.videos.map(v=>v.ts)),n:p.videos.length}))
+    .concat([{k:'fimpens-resa',name:'Fimpens Resa',logo:F.channel.logo,ts:Math.max(...fa.map(v=>v.ts)),n:fa.length}]);
+  xs.forEach(x=>x.kind=podKindOf(x.name));
+  const ord=k=>PODKINDS.findIndex(x=>x.k===k);
+  return xs.sort((a,b)=>ord(a.kind)-ord(b.kind)||b.ts-a.ts);
+}
+const shortName=n=>n.replace(/^(.{0,12}).*$/,(m,a)=>n.length>13?a.trim()+'…':n);
 function drawPodbar(){
   const pb=document.getElementById('podbar');
-  const on=st.mode==='pods'&&PODSTATE;
+  const on=st.mode==='pods'||st.types.has('Podd');
   document.body.classList.toggle('pods',st.mode==='pods');
   pb.hidden=!on; if(!on) return;
-  const cur=PODSTATE.pickers.find(x=>x.k===st.pod&&x.k);
-  const kind=PODKINDS.find(x=>x.k===st.podKind);
-  pb.innerHTML='<button class="pb-cur" id="pbopen">'+(cur?'<img src="'+cur.logo+'" alt="">':'<span class="pb-all">'+(kind?kind.ic:'🎙️')+'</span>')+
-    '<span class="pb-t"><small>Visar</small><b>'+esc(cur?cur.name:kind?kind.name:'Alla poddar')+'</b></span><span class="pb-go">Byt podd<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>'+
-    (cur||kind?'<button class="pb-x" id="pbclear" aria-label="Visa alla">✕</button>':'');
+  const list=podList(), sel=st.mode==='pods'?st.pod:null;
+  const allOn=st.mode==='pods'&&!st.pod&&!st.podKind;
+  let h='<div class="pi-row" id="pirow"><button class="pi'+(allOn?' on':'')+'" data-pick=""><span class="pi-ic pi-all">✨</span><b>Alla</b></button>';
+  let lastKind='';
+  for(const x of list){
+    if(x.kind!==lastKind){ const k=PODKINDS.find(y=>y.k===x.kind); h+='<span class="pi-sep" title="'+esc(k.name)+'">'+k.ic+'</span>'; lastKind=x.kind; }
+    h+='<button class="pi'+(sel===x.k?' on':'')+'" data-pick="'+x.k+'"><span class="pi-ic"><img src="'+x.logo+'" alt="" loading="lazy">'+(NOW-x.ts<2*864e5?'<i></i>':'')+'</span><b>'+esc(x.name)+'</b></button>';
+  }
+  h+='</div><button class="pi-more" id="pbopen" aria-label="Alla poddar per sort"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>';
+  pb.innerHTML=h;
+  const on1=pb.querySelector('.pi.on'); if(on1&&!pb._kept){ const r=pb.querySelector('#pirow'); r.scrollLeft=on1.offsetLeft-r.clientWidth/2+on1.clientWidth/2; }
 }
 function openPodSheet(){
-  const P2=PODSTATE.pickers.filter(x=>x.k);
+  const P2=podList();
   const item=x=>'<button class="ps-i'+(st.pod===x.k?' on':'')+'" data-pick="'+x.k+'"><img src="'+x.logo+'" alt=""><b>'+esc(x.name)+'</b><small>'+when(x.ts)+'</small>'+(NOW-x.ts<2*864e5?'<i class="new"></i>':'')+'</button>';
   let h='<div class="ps-head"><div class="eyebrow">Poddar &amp; media</div><h3>Välj podd</h3></div>'+
     '<button class="ps-allbtn'+(!st.pod&&!st.podKind?' on':'')+'" data-pick="">✨ Alla poddar <span>'+P2.reduce((s,x)=>s+x.n,0)+' avsnitt</span></button>';
@@ -840,7 +860,7 @@ function openPodSheet(){
   mbody.closest('.mbox').classList.add('podsheet');
 }
 function pickPod(pod,kind){
-  st.pod=pod; st.podKind=kind;
+  st.pod=pod; st.podKind=kind; st.mode='pods'; st.types.delete('Podd');
   try{localStorage.setItem('shl-pod',pod);localStorage.setItem('shl-podkind',kind);}catch(_){}
   closeModal(); render();
   const o=document.getElementById('out'); window.scrollTo({top:o.getBoundingClientRect().top+scrollY-document.querySelector('.bar').offsetHeight-8,behavior:'smooth'});
@@ -1331,7 +1351,7 @@ ib.addEventListener('click',async()=>{
 });
 if('serviceWorker' in navigator && SITE===location.origin){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
 // Ladda om sidan av sig själv när en ny version har publicerats
-const BUILD='f3d4108d0fe3';
+const BUILD='c8e1eeb6d832';
 async function checkVersion(){
   if(SITE!==location.origin) return;
   try{ const v=(await fetch('/version.txt?'+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'')).trim();
