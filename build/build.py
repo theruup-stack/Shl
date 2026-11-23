@@ -8,5 +8,9 @@ html = (r('template.html').replace('__DATA__', r('clubs_final.json')).replace('_
         .replace('__SHL__', r('shl_final.json')).replace('__FIMPEN__', r('fimpen_final.json'))
         .replace('__GAMES__', r('games.json')).replace('__NOW__', str(int(now.timestamp() * 1000)))
         .replace('och sju hockeypoddars kanaler', 'och hockeypoddarnas kanaler'))
+import hashlib
+ver = hashlib.sha1(html.encode()).hexdigest()[:12]
+html = html.replace('__BUILD__', ver)
 open(os.path.join(B, '..', 'public', 'index.html'), 'w', encoding='utf-8').write(html)
+open(os.path.join(B, '..', 'public', 'version.txt'), 'w').write(ver)
 print('public/index.html', len(html))

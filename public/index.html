@@ -1330,6 +1330,15 @@ ib.addEventListener('click',async()=>{
   openModal('<div class="mx-head"><img src="/icons/icon-192.png" alt="" style="border-radius:16px"><div><div class="eyebrow">Installera</div><h3>Lägg SHL på hemskärmen</h3><p>'+(isIOS?'Tryck på <b>Dela</b>-knappen (fyrkanten med pilen) längst ner i Safari och välj <b>Lägg till på hemskärmen</b>.':'Öppna webbläsarens meny (⋮) och välj <b>Installera app</b> eller <b>Lägg till på startskärmen</b>.')+'</p></div></div>');
 });
 if('serviceWorker' in navigator && SITE===location.origin){ navigator.serviceWorker.register('/sw.js').catch(()=>{}); }
+// Ladda om sidan av sig själv när en ny version har publicerats
+const BUILD='f3d4108d0fe3';
+async function checkVersion(){
+  if(SITE!==location.origin) return;
+  try{ const v=(await fetch('/version.txt?'+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'')).trim();
+    if(v&&v!==BUILD&&v.length===12){ try{ const regs=await navigator.serviceWorker.getRegistrations(); await Promise.all(regs.map(r=>r.update())); }catch(_){} location.reload(); } }catch(_){}
+}
+checkVersion(); setInterval(checkVersion,5*60e3);
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') checkVersion(); });
 
 
 /* ---------- NOTISER ---------- */

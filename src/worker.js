@@ -333,7 +333,15 @@ export default {
       return res;
     }
 
-    return env.ASSETS.fetch(request);
+    // Sidan och service workern ska alltid hämtas färska, så att uppdateringar syns direkt
+    const a = await env.ASSETS.fetch(request);
+    const ct = a.headers.get('content-type') || '';
+    if (ct.includes('text/html') || url.pathname === '/sw.js' || url.pathname === '/version.txt') {
+      const r = new Response(a.body, a);
+      r.headers.set('cache-control', 'no-store, must-revalidate');
+      return r;
+    }
+    return a;
   },
 
   async scheduled(event, env, ctx) {
