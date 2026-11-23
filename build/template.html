@@ -809,8 +809,8 @@ P.push(F.channel);
 P.unshift(L);
 const FR = {name:'Fimpens Resa', logo:F.channel.logo};
 const PODKINDS=[
-  {k:'snack',name:'Snack & analys',ic:'🎙️',pods:['Hockeytime','DOOZ & NALLE','Pettafnutt','HockeyNews','Hockeymorgon']},
-  {k:'media',name:'TV & tidningar',ic:'📺',pods:['TV4 Hockey','Expressen Sport','Sportbladet','Sportstudion']},
+  {k:'snack',name:'Snack & analys',ic:'🎙️',pods:['Hockeytime','All In Hockey','DOOZ & NALLE','Pettafnutt','HockeyNews','Hockeymorgon']},
+  {k:'media',name:'TV & tidningar',ic:'📺',pods:['Hockeysverige','TV4 Hockey','Expressen Sport','Sportbladet','Sportstudion']},
   {k:'resor',name:'Reportage & resor',ic:'🧳',pods:['Jimmy hjärta Hockey','Fimpens Resa',F.channel.name]},
   {k:'fantasy',name:'Fantasy',ic:'🏆',pods:['Toppa Laget','FantasySHL-podden']},
   {k:'liga',name:'Ligan',ic:'🏒',pods:[L.name]}
@@ -1179,7 +1179,7 @@ function render(){
       if(!vs.length) continue;
       const latest=Math.max(...p.videos.map(v=>v.ts));
       secs.push({ts:latest,html:'<section class="club" id="pod-'+slug(p.name)+'"><div class="club-head"><img class="logo-sq" src="'+p.logo+'" alt=""><div><h2>'+esc(p.name)+'<span class="podbadge">'+(p===L?'Liga':'Podd')+'</span></h2><div class="pod-desc">'+esc(p.desc)+'</div><div class="meta"><span>'+esc(p.subs)+'</span><span>'+vs.length+' avsnitt</span><span>Senaste: '+when(latest)+'</span></div></div>'+
-         '<a class="chlink" href="https://www.youtube.com/channel/'+p.id+'/videos" target="_blank" rel="noopener"><svg width="16" height="12" viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#ff0033"/><path d="M11 6v8l7-4z" fill="#fff"/></svg><span>Kanalen</span> ↗</a></div>'+
+         '<a class="chlink" href="https://www.youtube.com/'+(p.id[0]==='@'?p.id:'channel/'+p.id)+'/videos" target="_blank" rel="noopener"><svg width="16" height="12" viewBox="0 0 28 20"><rect width="28" height="20" rx="5" fill="#ff0033"/><path d="M11 6v8l7-4z" fill="#fff"/></svg><span>Kanalen</span> ↗</a></div>'+
          '<div class="row" style="--c:var(--pd)"><div class="row-h"><span class="lbl">Avsnitt</span><span class="n">'+vs.length+'</span><div class="nav"><button data-dir="-1" aria-label="Bakåt">‹</button><button data-dir="1" aria-label="Framåt">›</button></div></div><div class="strip">'+vs.map(v=>card(v,null,false)).join('')+'</div></div></section>'});
     }
     secs.sort((a,b)=>st.asc?a.ts-b.ts:b.ts-a.ts).forEach(x=>h+=x.html);

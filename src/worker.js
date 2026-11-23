@@ -46,31 +46,48 @@ export function parseFeed(xml) {
   }).filter(x => x.v && x.published);
 }
 
-// Kanaler utan inbyggd logga: hämta profilbilden från kanalsidan
-export const AVATAR_CHANNELS = ['UCM_9gWD_v4uT6rTGSUl1jIw'];
+// Kanaler utan inbyggd logga: hämta profilbilden från kanalsidan.
+// Kanaler som anges med @handtag slås upp till kanal-id här (cachas ett dygn).
+export const AVATAR_CHANNELS = ['UCM_9gWD_v4uT6rTGSUl1jIw', '@Hockeysverige-se', '@allinhockey'];
+export const HANDLES = ['@Hockeysverige-se', '@allinhockey'];
+async function channelPage(key) {
+  const url = 'https://www.youtube.com/' + (key.startsWith('@') ? key : 'channel/' + key);
+  const ck = new Request('https://cache.local/ytpage/' + encodeURIComponent(key));
+  const cache = caches.default;
+  let r = await cache.match(ck);
+  if (r) return r.json();
+  const res = await fetch(url, { headers: { 'user-agent': HEADERS['user-agent'], 'accept-language': 'sv-SE,sv;q=0.9', cookie: 'CONSENT=YES+1; SOCS=CAI' } });
+  if (!res.ok) throw new Error('yt ' + res.status);
+  const html = await res.text();
+  const id = (html.match(/"externalId":"(UC[\w-]{22})"/) || html.match(/<link rel="canonical" href="https:\/\/www\.youtube\.com\/channel\/(UC[\w-]{22})"/) || html.match(/"channelId":"(UC[\w-]{22})"/) || [])[1] || null;
+  const m = html.match(/<meta property="og:image" content="([^"]+)"/) || html.match(/"avatar":\{"thumbnails":\[\{"url":"([^"]+)"/);
+  const out = { id, avatar: m ? decode(m[1]).replace(/=s\d+-/, '=s176-') : null };
+  if (id) await cache.put(ck, new Response(JSON.stringify(out), { headers: { 'cache-control': 'public, max-age=86400' } }));
+  return out;
+}
 async function fetchAvatars() {
   const out = {};
-  await Promise.allSettled(AVATAR_CHANNELS.map(async id => {
-    const r = await fetch('https://www.youtube.com/channel/' + id, { headers: { 'user-agent': HEADERS['user-agent'], 'accept-language': 'sv-SE,sv;q=0.9' } });
-    if (!r.ok) return;
-    const html = await r.text();
-    const m = html.match(/<meta property="og:image" content="([^"]+)"/) || html.match(/"avatar":\{"thumbnails":\[\{"url":"([^"]+)"/);
-    if (m) out[id] = decode(m[1]).replace(/=s\d+-/, '=s176-');
-  }));
+  await Promise.allSettled(AVATAR_CHANNELS.map(async k => { const p = await channelPage(k); if (p.avatar) out[k] = p.avatar; }));
   return out;
 }
 
 async function fetchFeeds() {
-  const res = await Promise.allSettled(CHANNELS.map(id =>
+  const resolved = await Promise.allSettled(HANDLES.map(h => channelPage(h).then(p => [h, p.id])));
+  const alias = {};
+  resolved.forEach(r => { if (r.status === 'fulfilled' && r.value[1]) alias[r.value[1]] = r.value[0]; });
+  const ids = CHANNELS.concat(Object.keys(alias));
+  const res = await Promise.allSettled(ids.map(id =>
     fetch('https://www.youtube.com/feeds/videos.xml?channel_id=' + id, { headers: { 'user-agent': HEADERS['user-agent'], 'accept-language': 'sv-SE,sv;q=0.9' } })
       .then(r => r.ok ? r.text() : Promise.reject(r.status))
       .then(xml => [id, parseFeed(xml)])
   ));
   const out = {}, status = {};
   res.forEach((r, i) => {
-    if (r.status === 'fulfilled') { out[r.value[0]] = r.value[1]; status[CHANNELS[i]] = r.value[1].length; }
-    else status[CHANNELS[i]] = 'fel ' + r.reason;
+    const key = alias[ids[i]] || ids[i];
+    if (r.status === 'fulfilled') { out[key] = r.value[1]; status[key] = r.value[1].length; }
+    else status[key] = 'fel ' + r.reason;
   });
+  HANDLES.forEach((h, i) => { if (!(h in status)) status[h] = 'hittade inte kanal-id ' + (resolved[i].reason || ''); });
   return { out, status };
 }
 
