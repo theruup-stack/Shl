@@ -1,5 +1,5 @@
 // SHL-samlingen – service worker: offline-skal + notiser
-const CACHE = 'shl-v1';
+const CACHE = 'shl-v2';
 const SHELL = ['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });

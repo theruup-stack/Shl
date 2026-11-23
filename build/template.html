@@ -506,6 +506,37 @@ img{max-width:100%}
 
 .pod-intro{display:block}
 .pi-txt h2{margin-top:6px}
+.podbar{display:flex;gap:8px;margin-top:10px;flex:1 1 100%;width:100%;min-width:0;box-sizing:border-box}
+.pb-cur{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:8px 10px 8px 8px;border-radius:16px;border:1px solid color-mix(in srgb,var(--gold) 60%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 20%,var(--card2)),var(--card));box-shadow:0 6px 22px rgba(0,0,0,.35);text-align:left}
+.pb-cur img,.pb-all{width:40px;height:40px;border-radius:50%;background:#fff;object-fit:cover;flex:0 0 auto;box-shadow:0 3px 10px rgba(0,0,0,.4)}
+.pb-all{display:grid;place-items:center;background:linear-gradient(135deg,var(--gold2),var(--gold));font-size:19px}
+.pb-t{display:flex;flex-direction:column;min-width:0}
+.pb-t small{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--dim);font-weight:700}
+.pb-t b{font:800 19px/1.1 "Barlow Condensed",sans-serif;text-transform:uppercase;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pb-go{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:9px 13px;border-radius:999px;background:var(--gold);color:#1a1405;font-weight:800;font-size:13px;white-space:nowrap}
+.pb-x{flex:0 0 52px;border-radius:16px;border:1px solid var(--line2);background:var(--card);color:var(--mut);font-size:16px}
+.podsheet{width:min(760px,100%)}
+.ps-head h3{font:800 30px/1 "Barlow Condensed",sans-serif;text-transform:uppercase;margin-top:6px}
+.ps-allbtn{display:flex;align-items:center;gap:10px;width:100%;margin-top:16px;padding:14px 16px;border-radius:14px;border:1px solid var(--line2);background:var(--card);font-weight:800;font-size:15px;color:var(--txt)}
+.ps-allbtn span{margin-left:auto;font-size:12px;color:var(--dim);font-weight:600}
+.ps-allbtn.on{border-color:var(--gold);background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 22%,var(--card2)),var(--card))}
+.ps-sec{margin-top:20px}
+.ps-kind{display:flex;align-items:center;width:100%;padding:0 2px 10px;border-bottom:1px solid var(--line2);font:800 16px "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.6px;color:var(--txt)}
+.ps-kind em{margin-left:auto;font:600 12px Inter,sans-serif;text-transform:none;letter-spacing:0;color:var(--gold)}
+.ps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px}
+.ps-i{position:relative;display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 6px 12px;border-radius:14px;border:1px solid var(--line2);background:rgba(7,9,13,.45);text-align:center}
+.ps-i img{width:50px;height:50px;border-radius:50%;background:#fff;object-fit:cover;box-shadow:0 5px 14px rgba(0,0,0,.5)}
+.ps-i b{font:700 13.5px/1.15 "Barlow Condensed",sans-serif;text-transform:uppercase;color:var(--txt)}
+.ps-i small{font-size:10.5px;color:var(--dim)}
+.ps-i.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.ps-i .new{position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+@media (max-width:760px){
+  body.pods #types{display:none}
+  body.pods .pod-intro{display:none}
+  .podbar{margin-top:8px;padding-bottom:2px}.pb-x{flex:0 0 44px}.pb-go{padding:8px 11px;font-size:12.5px}.pb-cur{gap:10px}
+  .ps-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ps-i b{font-size:12.5px}
+}
 .pstep{display:flex;align-items:center;gap:10px;margin-top:22px;font:700 12px/1 "Barlow Condensed",sans-serif;letter-spacing:1.6px;text-transform:uppercase;color:var(--dim)}
 .pstep i{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--gold);color:#1a1405;font-style:normal;font-size:12px}
 .pstep:after{content:"";flex:1;height:1px;background:var(--line2)}
@@ -761,6 +792,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;color:var(--dim);fon
       <button data-m="live"><span class="mi livei"><span class="dot"></span></span><span class="ml">Live</span><span class="ms">Live</span></button>
     </nav>
     <div class="types" id="types"></div>
+    <div class="podbar" id="podbar" hidden></div>
   </div>
 </div>
 
@@ -783,6 +815,42 @@ const PODKINDS=[
   {k:'fantasy',name:'Fantasy',ic:'🏆',pods:['Toppa Laget','FantasySHL-podden']},
   {k:'liga',name:'Ligan',ic:'🏒',pods:[L.name]}
 ];
+let PODSTATE=null;
+function drawPodbar(){
+  const pb=document.getElementById('podbar');
+  const on=st.mode==='pods'&&PODSTATE;
+  document.body.classList.toggle('pods',st.mode==='pods');
+  pb.hidden=!on; if(!on) return;
+  const cur=PODSTATE.pickers.find(x=>x.k===st.pod&&x.k);
+  const kind=PODKINDS.find(x=>x.k===st.podKind);
+  pb.innerHTML='<button class="pb-cur" id="pbopen">'+(cur?'<img src="'+cur.logo+'" alt="">':'<span class="pb-all">'+(kind?kind.ic:'🎙️')+'</span>')+
+    '<span class="pb-t"><small>Visar</small><b>'+esc(cur?cur.name:kind?kind.name:'Alla poddar')+'</b></span><span class="pb-go">Byt podd<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>'+
+    (cur||kind?'<button class="pb-x" id="pbclear" aria-label="Visa alla">✕</button>':'');
+}
+function openPodSheet(){
+  const P2=PODSTATE.pickers.filter(x=>x.k);
+  const item=x=>'<button class="ps-i'+(st.pod===x.k?' on':'')+'" data-pick="'+x.k+'"><img src="'+x.logo+'" alt=""><b>'+esc(x.name)+'</b><small>'+when(x.ts)+'</small>'+(NOW-x.ts<2*864e5?'<i class="new"></i>':'')+'</button>';
+  let h='<div class="ps-head"><div class="eyebrow">Poddar &amp; media</div><h3>Välj podd</h3></div>'+
+    '<button class="ps-allbtn'+(!st.pod&&!st.podKind?' on':'')+'" data-pick="">✨ Alla poddar <span>'+P2.reduce((s,x)=>s+x.n,0)+' avsnitt</span></button>';
+  for(const k of PODKINDS){
+    const xs=P2.filter(x=>x.kind===k.k); if(!xs.length) continue;
+    h+='<div class="ps-sec"><button class="ps-kind" data-kindpick="'+k.k+'"><span>'+k.ic+' '+esc(k.name)+'</span><em>Visa alla '+xs.length+' ›</em></button><div class="ps-grid">'+xs.map(item).join('')+'</div></div>';
+  }
+  openModal(h);
+  mbody.closest('.mbox').classList.add('podsheet');
+}
+function pickPod(pod,kind){
+  st.pod=pod; st.podKind=kind;
+  try{localStorage.setItem('shl-pod',pod);localStorage.setItem('shl-podkind',kind);}catch(_){}
+  closeModal(); render();
+  const o=document.getElementById('out'); window.scrollTo({top:o.getBoundingClientRect().top+scrollY-document.querySelector('.bar').offsetHeight-8,behavior:'smooth'});
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest('#pbopen')) return openPodSheet();
+  if(e.target.closest('#pbclear')) return pickPod('','');
+  const k=e.target.closest('[data-kindpick]'); if(k) return pickPod('',k.dataset.kindpick);
+  const p=e.target.closest('[data-pick]'); if(p) return pickPod(p.dataset.pick,'');
+});
 const podKindOf=name=>(PODKINDS.find(x=>x.pods.includes(name))||{k:'snack'}).k;
 F.seasons.forEach(s=>s.videos.forEach(v=>{v.pod=FR; v.season=s.name;}));
 
@@ -1024,7 +1092,7 @@ function drawTypes(vs){
 document.getElementById('types').onclick = e => { const b=e.target.closest('.tchip'); if(!b) return; const k=b.dataset.t; st.types.has(k)?st.types.delete(k):st.types.add(k); render(); };
 document.getElementById('q').oninput = e => { st.q=e.target.value.trim().toLowerCase(); render(); };
 document.getElementById('sort').onclick = () => { st.asc=!st.asc; render(); };
-document.getElementById('mode').onclick = e => { const b=e.target.closest('button'); if(!b) return; st.mode=b.dataset.m; render(); };
+document.getElementById('mode').onclick = e => { const b=e.target.closest('button'); if(!b) return; st.mode=b.dataset.m; render(); if(st.mode==='pods'&&innerWidth<=760){ const o=document.getElementById('out'); window.scrollTo({top:o.getBoundingClientRect().top+scrollY-document.querySelector('.bar').offsetHeight-8}); } };
 
 function card(v,c,showClub){
   return '<a class="card" style="--c:'+TC[v.cat]+'" href="https://www.youtube.com/watch?v='+v.v+'" target="_blank" rel="noopener">'+
@@ -1095,6 +1163,7 @@ function render(){
     if(st.pod===undefined){ try{ st.pod=localStorage.getItem('shl-pod')||''; }catch(e){ st.pod=''; } }
     const kindCount=k=>pickers.filter(x=>x.k&&x.kind===k).reduce((s,x)=>s+x.n,0);
     const shown=pickers.filter(x=>!x.k||!st.podKind||x.kind===st.podKind);
+    PODSTATE={pickers};
     if(!shown.some(x=>x.k===st.pod)) st.pod='';
     if(!st.pod&&st.podKind) shown[0].n=kindCount(st.podKind);
     h+='<div class="pod-intro"><div class="pi-txt"><div class="eyebrow">Poddar &amp; media</div><h2>Välj vem du vill se</h2><p>Välj sorts podd och sedan en poddare. Sökfältet letar klipp bara i det du valt. Valen sparas till nästa gång.</p></div>'+
@@ -1122,6 +1191,7 @@ function render(){
     if(cur) h+='<div class="feed-day"><h3>'+cur+'</h3><div class="grid">'+buf+'</div></div>';
   }
   document.getElementById('out').innerHTML = h || '<div class="empty">Inga videor matchar din sökning.</div>';
+  drawPodbar();
   const pk=document.querySelector('.podpicks'), on=pk&&pk.querySelector('.pp.on'); if(on&&pk.scrollWidth>pk.clientWidth) pk.scrollLeft=on.offsetLeft-(pk.clientWidth-on.offsetWidth)/2;
 }
 document.getElementById('out').addEventListener('click',e=>{const b=e.target.closest('.nav button'); if(!b) return; const s=b.closest('.row').querySelector('.strip'); s.scrollBy({left:+b.dataset.dir*s.clientWidth*0.85,behavior:'smooth'});});
